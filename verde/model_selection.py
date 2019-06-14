@@ -11,7 +11,7 @@ from .base import check_fit_input
 from .utils import DummyClient
 
 
-def train_test_split(coordinates, data, weights=None, **kwargs):
+def train_test_split(coordinates, data, weights=None, method="random", **kwargs):
     r"""
     Split a dataset into a training and a testing set for cross-validation.
 
@@ -80,10 +80,21 @@ def train_test_split(coordinates, data, weights=None, **kwargs):
       (None,)
 
     """
+    valid_methods = ["random", "block"]
+    if method not in valid_methods:
+        raise ValueError(
+            "Invalid splitting method '{}'. Must be one of '{}'.".format(
+                method, valid_methods
+            )
+        )
     args = check_fit_input(coordinates, data, weights, unpack=False)
     ndata = args[1][0].size
     indices = np.arange(ndata)
-    split = next(ShuffleSplit(n_splits=1, **kwargs).split(indices))
+    if method == "random":
+        cv = ShuffleSplit(n_splits=1, **kwargs)
+    if method == "block":
+        cv = ShuffleSplit(n_splits=1)
+    split = next(cv.split(indices))
     train, test = (tuple(select(i, index) for i in args) for index in split)
     return train, test
 
