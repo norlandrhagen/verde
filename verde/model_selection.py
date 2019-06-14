@@ -5,10 +5,47 @@ Supports using a dask.distributed.Client object for parallelism. The
 DummyClient is used as a serial version of the parallel client.
 """
 import numpy as np
-from sklearn.model_selection import KFold, ShuffleSplit
+from sklearn.model_selection import KFold, ShuffleSplit, BaseCrossValidator
 
 from .base import check_fit_input
 from .utils import DummyClient
+from .coordinates import block_split
+
+
+class BlockShuffleSplit(BaseCrossValidator):
+    """
+    Random spatial block permutation cross-validator.
+
+    """
+    def __init__(self, n_splits=10, test_size=0.1, train_size=None, random_state=None,
+                 region=None, spacing=None, shape=None, adjust="spacing"):
+        self.n_splits = n_splits
+        self.test_size = test_size
+        self.train_size = train_size
+        self.random_state = random_state
+        self.region = region
+        self.spacing = spacing
+        self.shape = shape
+        self.adjust = adjust
+
+    def get_n_splits(self):
+        """
+        """
+        return self.n_splits
+
+    def split(self, coordinates):
+        """
+        """
+        _, labels = block_split(coordinates, spacing=self.spacing, shape=self.shape,
+                                region=self.region, adjust=self.adjust)
+        block_ids = np.unique(labels)
+        shuffle = ShuffleSplit(n_splits=self.n_splits, test_size=self.test_size,
+                               train_size=self.train_size,
+                               random_state=self.random_state)
+        for train_id, test_id in shuffle.split(block_ids):
+            train = np.where(np.isin(labels, block_ids[train_id]))
+            test = np.where(np.isin(labels, block_ids[test_id]))
+            yield train, test
 
 
 def train_test_split(coordinates, data, weights=None, method="random", **kwargs):
@@ -88,13 +125,14 @@ def train_test_split(coordinates, data, weights=None, method="random", **kwargs)
             )
         )
     args = check_fit_input(coordinates, data, weights, unpack=False)
-    ndata = args[1][0].size
-    indices = np.arange(ndata)
     if method == "random":
+        ndata = args[1][0].size
+        indices = np.arange(ndata)
         cv = ShuffleSplit(n_splits=1, **kwargs)
+        split = next(cv.split(indices))
     if method == "block":
-        cv = ShuffleSplit(n_splits=1)
-    split = next(cv.split(indices))
+        cv = BlockShuffleSplit(n_splits=1, **kwargs)
+        split = next(cv.split(coordinates))
     train, test = (tuple(select(i, index) for i in args) for index in split)
     return train, test
 
