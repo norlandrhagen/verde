@@ -25,7 +25,9 @@ region = vd.get_region(coordinates)
 # Split the data into a training and testing set by picking points at random
 # This is NOT the best way to split spatially correlated data and will cease being the
 # default in future versions of Verde.
-train, test = vd.train_test_split(coordinates, data.bathymetry_m, random_state=2)
+train, test = vd.train_test_split(coordinates, data.bathymetry_m, random_state=0)
+
+print("Train and test data sizes:")
 print(train[0][0].size, test[0][0].size)
 
 # Alternatively, we can split the data into blocks and pick blocks at random.
@@ -33,9 +35,10 @@ print(train[0][0].size, test[0][0].size)
 # datasets are not spatially correlated, which would bias our model evaluation.
 # This will be the default in future versions of Verde.
 block_train, block_test = vd.train_test_split(
-    coordinates, data.bathymetry_m, method="block", spacing=1, random_state=0,
+    coordinates, data.bathymetry_m, method="block", spacing=1, random_state=1
 )
 
+print("Blocked train and test data sizes:")
 print(block_train[0][0].size, block_test[0][0].size)
 
 fig, axes = plt.subplots(
@@ -44,15 +47,15 @@ fig, axes = plt.subplots(
 crs = ccrs.PlateCarree()
 ax = axes[0]
 ax.set_title("Shuffle Split")
-ax.scatter(*train[0], c="blue", s=10, transform=crs, label="train")
-ax.scatter(*test[0], c="red", s=10, transform=crs, label="test")
+ax.scatter(*train[0], c="blue", s=1, transform=crs, label="train")
+ax.scatter(*test[0], c="red", s=1, transform=crs, label="test")
 vd.datasets.setup_baja_bathymetry_map(ax)
 ax.coastlines()
 ax.legend(loc="upper right")
 ax = axes[1]
 ax.set_title("Block Shuffle Split")
-ax.scatter(*block_train[0], c="blue", s=10, transform=crs, label="train")
-ax.scatter(*block_test[0], c="red", s=10, transform=crs, label="test")
+ax.scatter(*block_train[0], c="blue", s=1, transform=crs, label="train")
+ax.scatter(*block_test[0], c="red", s=1, transform=crs, label="test")
 vd.datasets.setup_baja_bathymetry_map(ax)
 ax.coastlines()
 ax.legend(loc="upper right")

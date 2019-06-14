@@ -50,7 +50,12 @@ spacing = 15 / 60
 # (``test_size=0.3``).
 
 train, test = vd.train_test_split(
-    proj_coords, data.air_temperature_c, test_size=0.3, random_state=0
+    proj_coords,
+    data.air_temperature_c,
+    test_size=0.3,
+    random_state=0,
+    method="block",
+    spacing=1 * 111000,
 )
 
 ########################################################################################
@@ -116,6 +121,7 @@ pc = grid.temperature.plot.pcolormesh(
     transform=ccrs.PlateCarree(),
     add_colorbar=False,
     add_labels=False,
+    center=False,
 )
 plt.colorbar(pc).set_label("C")
 ax.plot(data.longitude, data.latitude, ".k", markersize=1, transform=ccrs.PlateCarree())
@@ -148,7 +154,12 @@ print("R² score:", score)
 
 # Use 1 as a seed instead of 0
 train_other, test_other = vd.train_test_split(
-    proj_coords, data.air_temperature_c, test_size=0.3, random_state=1
+    proj_coords,
+    data.air_temperature_c,
+    test_size=0.3,
+    random_state=1,
+    method="block",
+    spacing=1 * 111000,
 )
 
 print("R² score with seed 1:", vd.Spline().fit(*train_other).score(*test_other))

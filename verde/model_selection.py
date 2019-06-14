@@ -17,8 +17,19 @@ class BlockShuffleSplit(BaseCrossValidator):
     Random spatial block permutation cross-validator.
 
     """
-    def __init__(self, n_splits=10, test_size=0.1, train_size=None, random_state=None,
-                 region=None, spacing=None, shape=None, adjust="spacing"):
+
+    def __init__(
+        self,
+        n_splits=10,
+        test_size=0.1,
+        train_size=None,
+        random_state=None,
+        region=None,
+        spacing=None,
+        shape=None,
+        adjust="spacing",
+        iterations=50,
+    ):
         self.n_splits = n_splits
         self.test_size = test_size
         self.train_size = train_size
@@ -27,6 +38,7 @@ class BlockShuffleSplit(BaseCrossValidator):
         self.spacing = spacing
         self.shape = shape
         self.adjust = adjust
+        self.iterations = iterations
 
     def get_n_splits(self):
         """
@@ -36,16 +48,31 @@ class BlockShuffleSplit(BaseCrossValidator):
     def split(self, coordinates):
         """
         """
-        _, labels = block_split(coordinates, spacing=self.spacing, shape=self.shape,
-                                region=self.region, adjust=self.adjust)
+        _, labels = block_split(
+            coordinates,
+            spacing=self.spacing,
+            shape=self.shape,
+            region=self.region,
+            adjust=self.adjust,
+        )
         block_ids = np.unique(labels)
-        shuffle = ShuffleSplit(n_splits=self.n_splits, test_size=self.test_size,
-                               train_size=self.train_size,
-                               random_state=self.random_state)
-        for train_id, test_id in shuffle.split(block_ids):
-            train = np.where(np.isin(labels, block_ids[train_id]))
-            test = np.where(np.isin(labels, block_ids[test_id]))
-            yield train, test
+        shuffle = ShuffleSplit(
+            n_splits=self.n_splits * self.iterations,
+            test_size=self.test_size,
+            train_size=self.train_size,
+            random_state=self.random_state,
+        ).split(block_ids)
+        for _ in range(self.n_splits):
+            trains, tests, balance = [], [], []
+            for _ in range(self.iterations):
+                train_id, test_id = next(shuffle)
+                trains.append(np.where(np.isin(labels, block_ids[train_id]))[0])
+                tests.append(np.where(np.isin(labels, block_ids[test_id]))[0])
+                balance.append(
+                    abs(trains[-1].size / tests[-1].size - train_id.size / test_id.size)
+                )
+            best = np.argmin(balance)
+            yield trains[best], tests[best]
 
 
 def train_test_split(coordinates, data, weights=None, method="random", **kwargs):
