@@ -12,15 +12,19 @@ from .utils import DummyClient
 from .coordinates import block_split
 
 
-class BlockShuffleSplit(BaseCrossValidator):
+class BaseBlockCrossValidator(BaseCrossValidator):
     """
-    Random spatial block permutation cross-validator.
+    Base class for spatially blocked cross-validators.
 
+    Instead of splitting the data randomly or in folds, divide the data into spatial
+    blocks and split the blocks between train and test. See [Roberts2017]_.
     """
+
+    is_spatial = True
 
     def __init__(
         self,
-        n_splits=10,
+        n_splits,
         test_size=0.1,
         train_size=None,
         random_state=None,
@@ -44,6 +48,57 @@ class BlockShuffleSplit(BaseCrossValidator):
         """
         """
         return self.n_splits
+
+    def split(self, coordinates):
+        """
+        """
+        _, labels = block_split(
+            coordinates,
+            spacing=self.spacing,
+            shape=self.shape,
+            region=self.region,
+            adjust=self.adjust,
+        )
+        block_ids = np.unique(labels)
+        shuffle = ShuffleSplit(
+            n_splits=self.n_splits * self.iterations,
+            test_size=self.test_size,
+            train_size=self.train_size,
+            random_state=self.random_state,
+        ).split(block_ids)
+        for _ in range(self.n_splits):
+            trains, tests, balance = [], [], []
+            for _ in range(self.iterations):
+                train_id, test_id = next(shuffle)
+                trains.append(np.where(np.isin(labels, block_ids[train_id]))[0])
+                tests.append(np.where(np.isin(labels, block_ids[test_id]))[0])
+                balance.append(
+                    abs(trains[-1].size / tests[-1].size - train_id.size / test_id.size)
+                )
+            best = np.argmin(balance)
+            yield trains[best], tests[best]
+
+
+class BlockShuffleSplit(BaseBlockCrossValidator):
+    """
+    Random spatial block permutation cross-validator.
+    """
+
+    def __init__(
+        self,
+        n_splits=10,
+        test_size=0.1,
+        train_size=None,
+        random_state=None,
+        region=None,
+        spacing=None,
+        shape=None,
+        adjust="spacing",
+        iterations=50,
+    ):
+        super().__init__(n_splits=n_splits, test_size=test_size, train_size=train_size,
+              random_state=random_state, region=region, spacing=spacing, shape=shape,
+              adjust=adjust, iterations=iterations,)
 
     def split(self, coordinates):
         """
@@ -260,7 +315,7 @@ def cross_val_score(estimator, coordinates, data, weights=None, cv=None, client=
         one data component is provided, you must provide a weights array for
         each data component (if not none).
     cv : None or cross-validation generator
-        Any scikit-learn cross-validation generator. Defaults to
+        Any scikit-learn or Verde cross-validation generator. Defaults to
         :class:`sklearn.model_selection.KFold`.
     client : None or dask.distributed.Client
         If None, then computations are run serially. Otherwise, should be a
@@ -298,6 +353,7 @@ def cross_val_score(estimator, coordinates, data, weights=None, cv=None, client=
     <class 'distributed.client.Future'>
     >>> # We need to call .result() to get back the actual value
     >>> print('{:.2f}'.format(scores[0].result()))
+    o
     1.00
     >>> # Close the client and shutdown the local cluster
     >>> client.close()
@@ -310,10 +366,13 @@ def cross_val_score(estimator, coordinates, data, weights=None, cv=None, client=
         client = DummyClient()
     if cv is None:
         cv = KFold(shuffle=True, random_state=0, n_splits=5)
-    ndata = data[0].size
+    if getattr(cv, "is_spatial", False):
+        splits = cv.split(coordinates)
+    else:
+        splits = cv.split(np.arange(data[0].size))
     args = (coordinates, data, weights)
     scores = []
-    for train, test in cv.split(np.arange(ndata)):
+    for train, test in splits:
         train_data, test_data = (
             tuple(select(i, index) for i in args) for index in (train, test)
         )
