@@ -4,6 +4,8 @@ Functions for automating model selection through cross-validation.
 Supports using a dask.distributed.Client object for parallelism. The
 DummyClient is used as a serial version of the parallel client.
 """
+from abc import ABCMeta, abstractmethod
+
 import numpy as np
 from sklearn.model_selection import KFold, ShuffleSplit, BaseCrossValidator
 
@@ -12,7 +14,7 @@ from .utils import DummyClient
 from .coordinates import block_split
 
 
-class BaseBlockCrossValidator(BaseCrossValidator):
+class BaseBlockCrossValidator(BaseCrossValidator, metaclass=ABCMeta):
     """
     Base class for spatially blocked cross-validators.
 
@@ -25,29 +27,25 @@ class BaseBlockCrossValidator(BaseCrossValidator):
     def __init__(
         self,
         n_splits,
-        test_size=0.1,
-        train_size=None,
-        random_state=None,
-        region=None,
         spacing=None,
         shape=None,
-        adjust="spacing",
-        iterations=50,
+        iterations=1,
     ):
         self.n_splits = n_splits
-        self.test_size = test_size
-        self.train_size = train_size
-        self.random_state = random_state
-        self.region = region
         self.spacing = spacing
         self.shape = shape
-        self.adjust = adjust
         self.iterations = iterations
 
     def get_n_splits(self):
         """
         """
         return self.n_splits
+
+    @abstractmethod
+    def _get_cv(self):
+        """
+        """
+        pass
 
     def split(self, coordinates):
         """
@@ -56,16 +54,11 @@ class BaseBlockCrossValidator(BaseCrossValidator):
             coordinates,
             spacing=self.spacing,
             shape=self.shape,
-            region=self.region,
-            adjust=self.adjust,
+            region=None,
+            adjust="spacing",
         )
         block_ids = np.unique(labels)
-        shuffle = ShuffleSplit(
-            n_splits=self.n_splits * self.iterations,
-            test_size=self.test_size,
-            train_size=self.train_size,
-            random_state=self.random_state,
-        ).split(block_ids)
+        shuffle = self._get_cv().split(block_ids)
         for _ in range(self.n_splits):
             trains, tests, balance = [], [], []
             for _ in range(self.iterations):
@@ -77,6 +70,22 @@ class BaseBlockCrossValidator(BaseCrossValidator):
                 )
             best = np.argmin(balance)
             yield trains[best], tests[best]
+
+
+class BlockKFold(BaseBlockCrossValidator):
+    """
+    """
+
+    def __init__(self, n_splits=5, shuffle=False, random_state=None, spacing=None, shape=None):
+        super().__init__(n_splits=n_splits, spacing=spacing, shape=shape, iterations=1)
+        self.shuffle = shuffle
+        self.random_state = random_state
+
+    def _get_cv(self):
+        """
+        """
+        return KFold(shuffle=self.shuffle, random_state=self.random_state,
+                     n_splits=self.n_splits)
 
 
 class BlockShuffleSplit(BaseBlockCrossValidator):
@@ -90,44 +99,27 @@ class BlockShuffleSplit(BaseBlockCrossValidator):
         test_size=0.1,
         train_size=None,
         random_state=None,
-        region=None,
         spacing=None,
         shape=None,
-        adjust="spacing",
         iterations=50,
     ):
-        super().__init__(n_splits=n_splits, test_size=test_size, train_size=train_size,
-              random_state=random_state, region=region, spacing=spacing, shape=shape,
-              adjust=adjust, iterations=iterations,)
+        super().__init__(n_splits=n_splits, spacing=spacing, shape=shape,
+                         iterations=iterations)
+        self.test_size = test_size
+        self.train_size = train_size
+        self.random_state = random_state
+        self.spacing = spacing
+        self.shape = shape
 
-    def split(self, coordinates):
+    def _get_cv(self):
         """
         """
-        _, labels = block_split(
-            coordinates,
-            spacing=self.spacing,
-            shape=self.shape,
-            region=self.region,
-            adjust=self.adjust,
-        )
-        block_ids = np.unique(labels)
-        shuffle = ShuffleSplit(
+        return ShuffleSplit(
             n_splits=self.n_splits * self.iterations,
             test_size=self.test_size,
             train_size=self.train_size,
             random_state=self.random_state,
-        ).split(block_ids)
-        for _ in range(self.n_splits):
-            trains, tests, balance = [], [], []
-            for _ in range(self.iterations):
-                train_id, test_id = next(shuffle)
-                trains.append(np.where(np.isin(labels, block_ids[train_id]))[0])
-                tests.append(np.where(np.isin(labels, block_ids[test_id]))[0])
-                balance.append(
-                    abs(trains[-1].size / tests[-1].size - train_id.size / test_id.size)
-                )
-            best = np.argmin(balance)
-            yield trains[best], tests[best]
+        )
 
 
 def train_test_split(coordinates, data, weights=None, method="random", **kwargs):

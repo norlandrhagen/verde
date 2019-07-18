@@ -46,6 +46,7 @@ Model Selection
     train_test_split
     cross_val_score
     BlockShuffleSplit
+    BlockKFold
 
 Coordinate Manipulation
 -----------------------

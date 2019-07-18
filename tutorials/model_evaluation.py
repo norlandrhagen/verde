@@ -37,7 +37,6 @@ coordinates, bathymetry = reducer.filter(
     (data.longitude, data.latitude), data.bathymetry_m
 )
 proj_coords = projection(*coordinates)
-region = vd.get_region(coordinates)
 
 ########################################################################################
 # Splitting the data randomly
@@ -108,7 +107,7 @@ print("R² score:", score)
 #
 # .. caution::
 #
-#     Once caveat for this score is that it is dependent on the particular split that we
+#     **Caveat**: for this score is that it is dependent on the particular split that we
 #     made. Changing the random number generator seed in :func:`verde.train_test_split`
 #     will result in a different score.
 
@@ -119,19 +118,17 @@ train_other, test_other = vd.train_test_split(
 print("R² score different random state:", vd.Spline().fit(*train_other).score(*test_other))
 
 ########################################################################################
-# .. caution::
-#
-#     Another caveat is that our data are *spatially correlated* (near by points tend to
-#     have similar values). Having testing points close to training points will tend to
-#     inflate the score. Splitting the data using blocks leads to a more honest score
-#     [Roberts2017]_.
-
+# That score isn't too different but this effect can be much larger for smaller
+# datasets.
 
 ########################################################################################
 # Splitting the data in blocks
 # ----------------------------
 #
-# [Roberts2017]_
+# One thing to note is that our data are *spatially correlated* (nearby points tend to
+# have similar values). Having testing points close to training points will tend to
+# inflate the score. Splitting the data using blocks leads to a more honest score
+# [Roberts2017]_.
 
 train, test = vd.train_test_split(
     proj_coords, bathymetry, test_size=0.3, random_state=0, method="block",
@@ -161,16 +158,18 @@ train_other, test_other = vd.train_test_split(
 
 print("R² score different random state:", vd.Spline().fit(*train_other).score(*test_other))
 
-
 ########################################################################################
+# Again we see that changing the random state leads to very different scores.
+#
 # Cross-validation
 # ----------------
 #
 # A more robust way of scoring the gridders is to use function
 # :func:`verde.cross_val_score`, which uses `k-fold cross-validation
 # <https://en.wikipedia.org/wiki/Cross-validation_(statistics)#k-fold_cross-validation>`__
-# by default. It will split the data *k* times and return the score on each *fold*. We
-# can then take a mean of these scores.
+# through :class:`sklearn.model_selection.KFold` by default. It will split the data *k*
+# times and return the score on each *fold*. We can then take a mean of these scores.
+# By default, the data is shuffled prior to splitting.
 
 scores = vd.cross_val_score(vd.Spline(), proj_coords, bathymetry)
 print("k-fold scores:", scores)
@@ -180,15 +179,12 @@ print("Mean score:", np.mean(scores))
 # You can also use most cross-validation splitter classes from
 # :mod:`sklearn.model_selection` and Verde by specifying the ``cv`` argument.
 #
-#
-# example, if we want to shuffle then split the data blocks *n* times
-# (:class:`verde.BlockShuffleSplit`):
+# As we've seen before, randomly splitting the data can lead to inflated scores. Verde
+# offers a spatially blocked version of k-fold through :class:`verde.BlockKFold`:
 
-shuffle = vd.BlockShuffleSplit(n_splits=10, test_size=0.3, random_state=0,
-                               spacing=1*111000)
-
-scores = vd.cross_val_score(vd.Spline(), proj_coords, bathymetry, cv=shuffle)
-print("shuffle scores:", scores)
+kfold = vd.BlockKFold(n_splits=5, shuffle=True, random_state=0, spacing=1*111000)
+scores = vd.cross_val_score(vd.Spline(), proj_coords, bathymetry, cv=kfold)
+print("block k-fold scores:", scores)
 print("Mean score:", np.mean(scores))
 
 ########################################################################################
@@ -196,3 +192,41 @@ print("Mean score:", np.mean(scores))
 # :class:`~verde.Spline`. We could try different combinations manually until we get a
 # good score. A better way is to do this automatically. In :ref:`model_selection` we'll
 # go over how to do that.
+
+########################################################################################
+# Visualizing blocked k-fold
+# --------------------------
+#
+# It's easier to understand how k-fold works by visualizing each of the folds. First,
+# lets plot the train and test sets for a non-randomized blocked k-fold:
+
+kfold = vd.BlockKFold(n_splits=4, shuffle=False, spacing=1*111000)
+
+fig, axes = plt.subplots(2, 2, figsize=(10, 10), sharex=True, sharey=True)
+for i, (train_index, test_index) in enumerate(kfold.split(proj_coords)):
+    ax = axes.ravel()[i]
+    ax.plot(proj_coords[0][train_index], proj_coords[1][train_index], ".r", label="train")
+    ax.plot(proj_coords[0][test_index], proj_coords[1][test_index], ".b", label="test")
+    ax.set_aspect("equal")
+    ax.set_title("Fold {}".format(i + 1))
+ax.legend()
+plt.tight_layout()
+plt.show()
+
+########################################################################################
+# As the figure shows, non-random folds are spatially grouped. Any gridder would have a
+# difficult time accurately predicting the test data in this situation. For this reason,
+# it is better to shuffle the blocks:
+
+kfold = vd.BlockKFold(n_splits=4, shuffle=True, spacing=1*111000, random_state=0)
+
+fig, axes = plt.subplots(2, 2, figsize=(10, 10), sharex=True, sharey=True)
+for i, (train_index, test_index) in enumerate(kfold.split(proj_coords)):
+    ax = axes.ravel()[i]
+    ax.plot(proj_coords[0][train_index], proj_coords[1][train_index], ".r", label="train")
+    ax.plot(proj_coords[0][test_index], proj_coords[1][test_index], ".b", label="test")
+    ax.set_aspect("equal")
+    ax.set_title("Fold {}".format(i + 1))
+ax.legend()
+plt.tight_layout()
+plt.show()

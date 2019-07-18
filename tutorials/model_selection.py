@@ -9,7 +9,7 @@ cross-validation. We found that the default parameters for :class:`verde.Spline`
 good for predicting our sample air temperature data. Now, let's see how we can tune the
 :class:`~verde.Spline` to improve the cross-validation performance.
 
-Once again, we'll start by importing the required packages and loading our sample data.
+Once again, we'll start by importing the required packages.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,25 +18,34 @@ import itertools
 import pyproj
 import verde as vd
 
-data = vd.datasets.fetch_texas_wind()
+########################################################################################
+# And loading, projecting, and decimating our sample bathymetry data.
+data = vd.datasets.fetch_baja_bathymetry()
 
 # Use Mercator projection because Spline is a Cartesian gridder
 projection = pyproj.Proj(proj="merc", lat_ts=data.latitude.mean())
-proj_coords = projection(data.longitude.values, data.latitude.values)
 
-region = vd.get_region((data.longitude, data.latitude))
-# The desired grid spacing in degrees (converted to meters using 1 degree approx. 111km)
-spacing = 15 / 60
+# Decimate to the desired grid spacing.
+spacing = 10 / 60
+reducer = vd.BlockReduce(reduction=np.median, spacing=spacing)
+coordinates, bathymetry = reducer.filter(
+    (data.longitude, data.latitude), data.bathymetry_m
+)
+proj_coords = projection(*coordinates)
+region = vd.get_region(coordinates)
 
 ########################################################################################
 # Before we begin tuning, let's reiterate what the results were with the default
 # parameters.
 
+# We'll use the spatially blocked version of k-fold cross-validation
+kfold = vd.BlockKFold(spacing=1*111000, shuffle=True, random_state=0)
+
 spline_default = vd.Spline()
 score_default = np.mean(
-    vd.cross_val_score(spline_default, proj_coords, data.air_temperature_c)
+    vd.cross_val_score(spline_default, proj_coords, bathymetry, cv=kfold)
 )
-spline_default.fit(proj_coords, data.air_temperature_c)
+spline_default.fit(proj_coords, bathymetry)
 print("R² with defaults:", score_default)
 
 
@@ -52,8 +61,9 @@ print("R² with defaults:", score_default)
 # re-evaluating the model score repeatedly for different values of these parameters.
 # Let's test the following combinations:
 
-dampings = [None, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
-mindists = [5e3, 10e3, 25e3, 50e3, 75e3, 100e3]
+# We'll use few combinations for the sake of time
+dampings = [None, 1e-5]
+mindists = [5e3, 50e3]
 
 # Use itertools to create a list with all combinations of parameters to test
 parameter_sets = [
@@ -70,7 +80,7 @@ spline = vd.Spline()
 scores = []
 for params in parameter_sets:
     spline.set_params(**params)
-    score = np.mean(vd.cross_val_score(spline, proj_coords, data.air_temperature_c))
+    score = np.mean(vd.cross_val_score(spline, proj_coords, bathymetry, cv=kfold))
     scores.append(score)
 print(scores)
 
@@ -83,7 +93,7 @@ print("Score with defaults:", score_default)
 print("Best parameters:", parameter_sets[best])
 
 ########################################################################################
-# **That is a big improvement over our previous score!**
+# That is a decent improvement over our previous score.
 #
 # This type of tuning is important and should always be performed when using a new
 # gridder or a new dataset. However, the above implementation requires a lot of
@@ -101,10 +111,11 @@ print("Best parameters:", parameter_sets[best])
 # list of ``damping`` and ``mindist`` parameters to try instead of only a single value:
 
 spline = vd.SplineCV(
-    dampings=[None, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1],
-    mindists=[5e3, 10e3, 25e3, 50e3, 75e3, 100e3],
+    dampings=[None, 1e-5],
+    mindists=[5e3, 50e3],
+    cv=kfold,
 )
-spline.fit(proj_coords, data.air_temperature_c)
+spline.fit(proj_coords, bathymetry)
 
 ########################################################################################
 # The estimated best damping and mindist, as well as the cross-validation scores, are
@@ -123,7 +134,7 @@ grid = spline.grid(
     spacing=spacing,
     projection=projection,
     dims=["latitude", "longitude"],
-    data_names=["temperature"],
+    data_names=["bathymetry"],
 )
 print(grid)
 
@@ -135,7 +146,7 @@ grid_default = spline_default.grid(
     spacing=spacing,
     projection=projection,
     dims=["latitude", "longitude"],
-    data_names=["temperature"],
+    data_names=["bathymetry"],
 )
 
 mask = vd.distance_mask(
@@ -148,28 +159,24 @@ mask = vd.distance_mask(
 grid = grid.where(mask)
 grid_default = grid_default.where(mask)
 
-plt.figure(figsize=(14, 8))
+plt.figure(figsize=(14, 10))
 for i, title, grd in zip(range(2), ["Defaults", "Tuned"], [grid_default, grid]):
     ax = plt.subplot(1, 2, i + 1, projection=ccrs.Mercator())
     ax.set_title(title)
-    pc = grd.temperature.plot.pcolormesh(
+    pc = grd.bathymetry.plot.pcolormesh(
         ax=ax,
-        cmap="plasma",
         transform=ccrs.PlateCarree(),
-        vmin=data.air_temperature_c.min(),
-        vmax=data.air_temperature_c.max(),
+        vmin=bathymetry.min(),
+        vmax=bathymetry.max(),
         add_colorbar=False,
         add_labels=False,
     )
     plt.colorbar(pc, orientation="horizontal", aspect=50, pad=0.05).set_label("C")
-    ax.plot(
-        data.longitude, data.latitude, ".k", markersize=1, transform=ccrs.PlateCarree()
-    )
-    vd.datasets.setup_texas_wind_map(ax)
+    vd.datasets.setup_baja_bathymetry_map(ax, land=None)
 plt.tight_layout()
 plt.show()
 
 ########################################################################################
-# Notice that, for sparse data like these, **smoother models tend to be better
-# predictors**. This is a sign that you should probably not trust many of the short
-# wavelength features that we get from the defaults.
+# Notice that **smoother models tend to be better predictors**. This is a sign that you
+# should probably not trust many of the short wavelength features that we get from the
+# defaults.
