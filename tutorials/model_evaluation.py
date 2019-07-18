@@ -57,7 +57,7 @@ proj_coords = projection(*coordinates)
 # (``test_size=0.3``).
 
 train, test = vd.train_test_split(
-    proj_coords, bathymetry, test_size=0.3, random_state=0,
+    proj_coords, bathymetry, test_size=0.3, random_state=0
 )
 # The test size should roughly 30% of the available data
 print(train[0][0].size, test[0][0].size)
@@ -112,10 +112,12 @@ print("R² score:", score)
 #     will result in a different score.
 
 train_other, test_other = vd.train_test_split(
-    proj_coords, bathymetry, test_size=0.3, random_state=2,
+    proj_coords, bathymetry, test_size=0.3, random_state=2
 )
 
-print("R² score different random state:", vd.Spline().fit(*train_other).score(*test_other))
+print(
+    "R² score different random state:", vd.Spline().fit(*train_other).score(*test_other)
+)
 
 ########################################################################################
 # That score isn't too different but this effect can be much larger for smaller
@@ -131,8 +133,12 @@ print("R² score different random state:", vd.Spline().fit(*train_other).score(*
 # [Roberts2017]_.
 
 train, test = vd.train_test_split(
-    proj_coords, bathymetry, test_size=0.3, random_state=0, method="block",
-    spacing=1*111000
+    proj_coords,
+    bathymetry,
+    test_size=0.3,
+    random_state=0,
+    method="block",
+    spacing=1 * 111000,
 )
 # The test size should roughly 30% of the available data
 print(train[0][0].size, test[0][0].size)
@@ -152,11 +158,17 @@ score = spline.score(*test)
 print("R² score:", score)
 
 train_other, test_other = vd.train_test_split(
-    proj_coords, bathymetry, test_size=0.3, random_state=10, method="block",
-    spacing=1*111000
+    proj_coords,
+    bathymetry,
+    test_size=0.3,
+    random_state=10,
+    method="block",
+    spacing=1 * 111000,
 )
 
-print("R² score different random state:", vd.Spline().fit(*train_other).score(*test_other))
+print(
+    "R² score different random state:", vd.Spline().fit(*train_other).score(*test_other)
+)
 
 ########################################################################################
 # Again we see that changing the random state leads to very different scores.
@@ -182,7 +194,7 @@ print("Mean score:", np.mean(scores))
 # As we've seen before, randomly splitting the data can lead to inflated scores. Verde
 # offers a spatially blocked version of k-fold through :class:`verde.BlockKFold`:
 
-kfold = vd.BlockKFold(n_splits=5, shuffle=True, random_state=0, spacing=1*111000)
+kfold = vd.BlockKFold(n_splits=5, shuffle=True, random_state=0, spacing=1 * 111000)
 scores = vd.cross_val_score(vd.Spline(), proj_coords, bathymetry, cv=kfold)
 print("block k-fold scores:", scores)
 print("Mean score:", np.mean(scores))
@@ -200,12 +212,14 @@ print("Mean score:", np.mean(scores))
 # It's easier to understand how k-fold works by visualizing each of the folds. First,
 # lets plot the train and test sets for a non-randomized blocked k-fold:
 
-kfold = vd.BlockKFold(n_splits=4, shuffle=False, spacing=1*111000)
+kfold = vd.BlockKFold(n_splits=4, shuffle=False, spacing=1 * 111000)
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 10), sharex=True, sharey=True)
 for i, (train_index, test_index) in enumerate(kfold.split(proj_coords)):
     ax = axes.ravel()[i]
-    ax.plot(proj_coords[0][train_index], proj_coords[1][train_index], ".r", label="train")
+    ax.plot(
+        proj_coords[0][train_index], proj_coords[1][train_index], ".r", label="train"
+    )
     ax.plot(proj_coords[0][test_index], proj_coords[1][test_index], ".b", label="test")
     ax.set_aspect("equal")
     ax.set_title("Fold {}".format(i + 1))
@@ -218,12 +232,14 @@ plt.show()
 # difficult time accurately predicting the test data in this situation. For this reason,
 # it is better to shuffle the blocks:
 
-kfold = vd.BlockKFold(n_splits=4, shuffle=True, spacing=1*111000, random_state=0)
+kfold = vd.BlockKFold(n_splits=4, shuffle=True, spacing=1 * 111000, random_state=0)
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 10), sharex=True, sharey=True)
 for i, (train_index, test_index) in enumerate(kfold.split(proj_coords)):
     ax = axes.ravel()[i]
-    ax.plot(proj_coords[0][train_index], proj_coords[1][train_index], ".r", label="train")
+    ax.plot(
+        proj_coords[0][train_index], proj_coords[1][train_index], ".r", label="train"
+    )
     ax.plot(proj_coords[0][test_index], proj_coords[1][test_index], ".b", label="test")
     ax.set_aspect("equal")
     ax.set_title("Fold {}".format(i + 1))

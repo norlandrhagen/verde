@@ -39,7 +39,7 @@ region = vd.get_region(coordinates)
 # parameters.
 
 # We'll use the spatially blocked version of k-fold cross-validation
-kfold = vd.BlockKFold(spacing=1*111000, shuffle=True, random_state=0)
+kfold = vd.BlockKFold(spacing=1 * 111000, shuffle=True, random_state=0)
 
 spline_default = vd.Spline()
 score_default = np.mean(
@@ -110,11 +110,7 @@ print("Best parameters:", parameter_sets[best])
 # automatically when fitting a dataset. The only difference is that you must provide a
 # list of ``damping`` and ``mindist`` parameters to try instead of only a single value:
 
-spline = vd.SplineCV(
-    dampings=[None, 1e-5],
-    mindists=[5e3, 50e3],
-    cv=kfold,
-)
+spline = vd.SplineCV(dampings=[None, 1e-5], mindists=[5e3, 50e3], cv=kfold)
 spline.fit(proj_coords, bathymetry)
 
 ########################################################################################

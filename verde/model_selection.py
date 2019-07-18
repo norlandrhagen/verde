@@ -24,13 +24,7 @@ class BaseBlockCrossValidator(BaseCrossValidator, metaclass=ABCMeta):
 
     is_spatial = True
 
-    def __init__(
-        self,
-        n_splits,
-        spacing=None,
-        shape=None,
-        iterations=1,
-    ):
+    def __init__(self, n_splits, spacing=None, shape=None, iterations=1):
         self.n_splits = n_splits
         self.spacing = spacing
         self.shape = shape
@@ -76,7 +70,9 @@ class BlockKFold(BaseBlockCrossValidator):
     """
     """
 
-    def __init__(self, n_splits=5, shuffle=False, random_state=None, spacing=None, shape=None):
+    def __init__(
+        self, n_splits=5, shuffle=False, random_state=None, spacing=None, shape=None
+    ):
         super().__init__(n_splits=n_splits, spacing=spacing, shape=shape, iterations=1)
         self.shuffle = shuffle
         self.random_state = random_state
@@ -84,8 +80,9 @@ class BlockKFold(BaseBlockCrossValidator):
     def _get_cv(self):
         """
         """
-        return KFold(shuffle=self.shuffle, random_state=self.random_state,
-                     n_splits=self.n_splits)
+        return KFold(
+            shuffle=self.shuffle, random_state=self.random_state, n_splits=self.n_splits
+        )
 
 
 class BlockShuffleSplit(BaseBlockCrossValidator):
@@ -103,8 +100,9 @@ class BlockShuffleSplit(BaseBlockCrossValidator):
         shape=None,
         iterations=50,
     ):
-        super().__init__(n_splits=n_splits, spacing=spacing, shape=shape,
-                         iterations=iterations)
+        super().__init__(
+            n_splits=n_splits, spacing=spacing, shape=shape, iterations=iterations
+        )
         self.test_size = test_size
         self.train_size = train_size
         self.random_state = random_state

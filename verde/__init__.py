@@ -22,7 +22,12 @@ from .scipygridder import ScipyGridder
 from .trend import Trend
 from .chain import Chain
 from .spline import Spline, SplineCV
-from.model_selection import cross_val_score, train_test_split, BlockShuffleSplit, BlockKFold
+from .model_selection import (
+    cross_val_score,
+    train_test_split,
+    BlockShuffleSplit,
+    BlockKFold,
+)
 from .vector import Vector, VectorSpline2D
 
 
