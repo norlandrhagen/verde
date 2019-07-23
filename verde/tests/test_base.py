@@ -7,7 +7,7 @@ import numpy.testing as npt
 import pytest
 
 from ..base.utils import check_fit_input
-from ..base.base_classes import (
+from ..base.gridders import (
     BaseGridder,
     get_dims,
     get_data_names,
