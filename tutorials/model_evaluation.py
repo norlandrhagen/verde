@@ -59,7 +59,7 @@ proj_coords = projection(*coordinates)
 train, test = vd.train_test_split(
     proj_coords, bathymetry, test_size=0.3, random_state=0
 )
-# The test size should roughly 30% of the available data
+# The test size should be roughly 30% of the available data
 print(train[0][0].size, test[0][0].size)
 
 ########################################################################################
@@ -130,7 +130,8 @@ print(
 # One thing to note is that our data are *spatially correlated* (nearby points tend to
 # have similar values). Having testing points close to training points will tend to
 # inflate the score. Splitting the data using blocks leads to a more honest score
-# [Roberts2017]_.
+# [Roberts2017]_. We can do this with :func:`verde.train_test_split` by specifying the
+# *block* method of splitting.
 
 train, test = vd.train_test_split(
     proj_coords,
@@ -140,8 +141,14 @@ train, test = vd.train_test_split(
     method="block",
     spacing=1 * 111000,
 )
-# The test size should roughly 30% of the available data
+
+# The test size should still be roughly 30% of the available data
 print(train[0][0].size, test[0][0].size)
+
+########################################################################################
+# The data gets grouped into blocks (with size specified by ``spacing``) and the blocks
+# get split into training and testing. We can see this clearly when we visualize the
+# split:
 
 plt.figure(figsize=(8, 6))
 ax = plt.axes()
@@ -152,6 +159,8 @@ ax.set_aspect("equal")
 plt.tight_layout()
 plt.show()
 
+########################################################################################
+# Training and scoring our
 spline = vd.Spline()
 spline.fit(*train)
 score = spline.score(*test)
