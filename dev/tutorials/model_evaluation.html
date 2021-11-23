@@ -39,8 +39,12 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Model Selection" href="model_selection.html" />
@@ -128,6 +132,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#splitting-the-data">Splitting the data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scoring">Scoring</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cross-validation">Cross-validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parallel-cross-validation">Parallel cross-validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#improving-the-score">Improving the score</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="model_selection.html">Model Selection</a></li>
@@ -160,7 +166,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/fatiando/verde/blob/master/CODE_OF_CONDUCT.md"><i class="fa fa-gavel fa-fw"></i> Code of Conduct</a></li>
             
-                <li class="toctree-l1"><a href="https://gitter.im/fatiando/fatiando"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+                <li class="toctree-l1"><a href="http://contact.fatiando.org"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
             
                 <li class="toctree-l1"><a href="https://github.com/fatiando/verde"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
@@ -236,14 +242,15 @@
            <div itemprop="articleBody">
             
   <div class="sphx-glr-download-link-note admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Click <a class="reference internal" href="#sphx-glr-download-tutorials-model-evaluation-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-model-evaluation-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="evaluating-performance">
 <span id="model-evaluation"></span><span id="sphx-glr-tutorials-model-evaluation-py"></span><h1>Evaluating Performance<a class="headerlink" href="#evaluating-performance" title="Permalink to this headline">¶</a></h1>
 <p>The Green’s functions based interpolations in Verde are all linear regressions under the
 hood. This means that we can use some of the same tactics from
-<a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection" title="(in scikit-learn v0.21.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.model_selection</span></code></a> to evaluate our interpolator’s performance. Once we have
+<a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection" title="(in scikit-learn v1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.model_selection</span></code></a> to evaluate our interpolator’s performance. Once we have
 a quantified measure of the quality of a given fitted gridder, we can use it to tune the
 gridder’s parameters, like <code class="docutils literal notranslate"><span class="pre">damping</span></code> for a <a class="reference internal" href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spline</span></code></a> (see
 <a class="reference internal" href="model_selection.html#model-selection"><span class="std std-ref">Model Selection</span></a>).</p>
@@ -256,22 +263,22 @@ our sample air temperature data.</p>
 <span class="kn">import</span> <span class="nn">pyproj</span>
 <span class="kn">import</span> <span class="nn">verde</span> <span class="k">as</span> <span class="nn">vd</span>
 
-<span class="n">data</span> <span class="o">=</span> <a href="../api/generated/verde.datasets.fetch_texas_wind.html#verde.datasets.fetch_texas_wind" title="View documentation for verde.datasets.fetch_texas_wind"><span class="n">vd</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fetch_texas_wind</span></a><span class="p">()</span>
+<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span></a> <span class="o">=</span> <a href="../api/generated/verde.datasets.fetch_texas_wind.html#verde.datasets.fetch_texas_wind" title="verde.datasets.fetch_texas_wind" class="sphx-glr-backref-module-verde-datasets sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fetch_texas_wind</span></a><span class="p">()</span>
 
 <span class="c1"># Use Mercator projection because Spline is a Cartesian gridder</span>
-<span class="n">projection</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="s2">&quot;merc&quot;</span><span class="p">,</span> <span class="n">lat_ts</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
-<span class="n">proj_coords</span> <span class="o">=</span> <span class="n">projection</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">longitude</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">projection</span> <span class="o">=</span> <span class="n">pyproj</span><span class="o">.</span><span class="n">Proj</span><span class="p">(</span><span class="n">proj</span><span class="o">=</span><span class="s2">&quot;merc&quot;</span><span class="p">,</span> <span class="n">lat_ts</span><span class="o">=</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.mean.html#pandas.Series.mean" title="pandas.Series.mean" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">data</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">mean</span></a><span class="p">())</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">proj_coords</span></a> <span class="o">=</span> <span class="n">projection</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.values.html#pandas.Series.values" title="pandas.Series.values" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-property"><span class="n">data</span><span class="o">.</span><span class="n">longitude</span><span class="o">.</span><span class="n">values</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.values.html#pandas.Series.values" title="pandas.Series.values" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-property"><span class="n">data</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">values</span></a><span class="p">)</span>
 
-<span class="n">region</span> <span class="o">=</span> <a href="../api/generated/verde.get_region.html#verde.get_region" title="View documentation for verde.get_region"><span class="n">vd</span><span class="o">.</span><span class="n">get_region</span></a><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">latitude</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">region</span></a> <span class="o">=</span> <a href="../api/generated/verde.get_region.html#verde.get_region" title="verde.get_region" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">get_region</span></a><span class="p">((</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">longitude</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">latitude</span></a><span class="p">))</span>
 <span class="c1"># For this data, we&#39;ll generate a grid with 15 arc-minute spacing</span>
-<span class="n">spacing</span> <span class="o">=</span> <span class="mi">15</span> <span class="o">/</span> <span class="mi">60</span>
+<a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">spacing</span></a> <span class="o">=</span> <span class="mi">15</span> <span class="o">/</span> <span class="mi">60</span>
 </pre></div>
 </div>
 <div class="section" id="splitting-the-data">
 <h2>Splitting the data<a class="headerlink" href="#splitting-the-data" title="Permalink to this headline">¶</a></h2>
 <p>We can’t evaluate a gridder on the data that went into fitting it. The true test of a
 model is if it can correctly predict data that it hasn’t seen before. scikit-learn has
-the <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split" title="(in scikit-learn v0.21.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.train_test_split</span></code></a> function to separate a dataset
+the <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html#sklearn.model_selection.train_test_split" title="(in scikit-learn v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.model_selection.train_test_split</span></code></a> function to separate a dataset
 into two parts: one for fitting the model (called <em>training</em> data) and a separate one
 for evaluating the model (called <em>testing</em> data). Using it with spatial data would
 involve some tedious array conversions so Verde implements
@@ -281,15 +288,15 @@ data arrays instead.</p>
 guarantee that we’ll get the same result every time we run this example. You probably
 don’t want to do that for real data. We’ll keep 30% of the data to use for testing
 (<code class="docutils literal notranslate"><span class="pre">test_size=0.3</span></code>).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <a href="../api/generated/verde.train_test_split.html#verde.train_test_split" title="View documentation for verde.train_test_split"><span class="n">vd</span><span class="o">.</span><span class="n">train_test_split</span></a><span class="p">(</span>
-    <span class="n">proj_coords</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test</span></a> <span class="o">=</span> <a href="../api/generated/verde.train_test_split.html#verde.train_test_split" title="verde.train_test_split" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">train_test_split</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">proj_coords</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span></a><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>The returned <code class="docutils literal notranslate"><span class="pre">train</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> variables are tuples containing coordinates, data,
 and (optionally) weights arrays. Since we’re not using weights, the third element of
 the tuple will be <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -306,7 +313,7 @@ the tuple will be <code class="docutils literal notranslate"><span class="pre">N
         -9113314.23851832,  -9581641.24134595,  -9051780.41245142,
         -9151620.1904154 ,  -9526253.16341599,  -9370920.33356321,
         -9422548.43514848,  -9363887.07831951,  -9926719.2733836 ,
-        -9263865.98169933, -10151535.32091524,  -9105488.90703954,
+        -9263865.98169933, -10151535.32091524,  -9105488.90703955,
         -9399024.72527645,  -9275584.89274308,  -9287132.02821771,
         -9254036.60191507,  -9356519.81502484,  -9300826.35830558,
         -9088836.21992941,  -9329331.55967991,  -9705882.69320157,
@@ -331,9 +338,9 @@ the tuple will be <code class="docutils literal notranslate"><span class="pre">N
         -9291378.70200816,  -9717038.56210237,  -9108943.50459486,
         -9187130.01777196,  -9178474.43770947,  -9821430.39264604,
         -9676089.17505937,  -9590325.45066986,  -9334752.033192  ,
-        -9349658.33535028,  -9217667.89671333,  -9192989.47329381,
+        -9349658.33535028,  -9217667.89671332,  -9192989.47329381,
         -9735189.51389807,  -9062249.17907602,  -9332852.95884533,
-        -9455815.63702027,  -9796236.64251932,  -9443505.05457202,
+        -9455815.63702027,  -9796236.64251933,  -9443505.05457202,
         -9320723.69505337,  -9754266.14514927,  -9765097.54908629,
         -9081077.6900608 ,  -9042075.09280036,  -9433427.55452137,
         -9587615.21391383]), array([2657710.28293861, 3302077.73567252, 2899046.15133399,
@@ -343,8 +350,8 @@ the tuple will be <code class="docutils literal notranslate"><span class="pre">N
        3287606.04132201, 3103141.68482877, 3197876.76156001,
        3149242.24908431, 3067381.83156894, 3400585.90023853,
        3243911.5995015 , 3290869.09139339, 2992634.70248073,
-       3169418.17605082, 3246497.10552017, 2817264.46474637,
-       3252930.02674656, 3200327.43647367, 3459184.29516942,
+       3169418.17605082, 3246497.10552016, 2817264.46474637,
+       3252930.02674656, 3200327.43647367, 3459184.29516943,
        3112292.18628403, 2917869.77563751, 3197809.62807528,
        3290225.42947942, 3652939.53050434, 3222645.66433888,
        2963817.97546003, 2824339.57488837, 3107155.82534808,
@@ -352,34 +359,34 @@ the tuple will be <code class="docutils literal notranslate"><span class="pre">N
        3166283.29483646, 3185632.21052805, 3023883.40574366,
        3417009.35720713, 3393428.62105992, 3316162.95136998,
        3082031.84084665, 2953318.41751121, 2933549.90421567,
-       2932676.98398158, 3020406.81467849, 3574040.01091358,
-       2790505.48355738, 2973418.65910264, 3307698.11129963,
+       2932676.98398158, 3020406.81467849, 3574040.01091357,
+       2790505.48355737, 2973418.65910265, 3307698.11129963,
        2945505.02203083, 3311522.23776724, 2975313.52946633,
        2861050.32840049, 2887880.3960125 , 2945898.28967202,
        2941474.84700705, 3225124.76062141, 3281387.74953726,
-       3159592.7976058 , 3315823.31326006, 2571845.86314015,
+       3159592.7976058 , 3315823.31326005, 2571845.86314014,
        3331844.27865595, 2740231.34771917, 3387759.04557859,
-       3060081.02436476, 3041845.53079301, 3210124.8374159 ,
+       3060081.02436475, 3041845.53079302, 3210124.8374159 ,
        3164074.94938398, 3271836.50108902, 2579123.45324659,
        2545954.59014788, 3342747.49976745, 2979356.30060547,
-       3009203.6131726 , 2719110.10495866, 2846814.97160994,
+       3009203.6131726 , 2719110.10495866, 2846814.97160993,
        3188985.42191104, 2983466.36042869, 3294675.45126596,
        3039773.54716658, 3071437.56540843, 3483134.04990316,
        3294607.6695262 , 3667917.1194501 , 3619924.68699415,
        2573548.51452294, 2821249.74463367, 2683074.91768678,
-       3285461.36507139, 3652271.03785312, 3283204.30900926,
+       3285461.36507139, 3652271.03785311, 3283204.30900926,
        3210853.02111693, 2943844.71518428, 3230601.11578242,
-       3137567.17555595, 2777047.34270749, 2945144.53916802,
+       3137567.17555594, 2777047.34270749, 2945144.53916802,
        3066497.95513723, 3110760.99744545, 3188091.12461515,
        3298991.83921469, 3394820.85278175, 3391739.95155904,
        3286590.08456857, 3389059.21988513, 3085628.36101872,
-       3630202.83368938, 3134419.72201147, 3256654.45390054,
+       3630202.83368938, 3134419.72201146, 3256654.45390054,
        2573738.88783378, 3339785.07776942, 3063935.13249589,
        3648601.05705207, 3330211.5352512 , 3142162.17467495,
        2982622.30031315, 3282673.97488324, 3183676.67838886,
        3006522.74236789, 2990221.2234946 , 3532083.29147308,
-       2942206.50247381, 3121339.67312345, 2913261.59698676,
-       3259243.23756798])), (array([18.15166667, 12.17857143, 16.45916667, 16.60084507, 12.41170213,
+       2942206.50247381, 3121339.67312344, 2913261.59698675,
+       3259243.23756799])), (array([18.15166667, 12.17857143, 16.45916667, 16.60084507, 12.41170213,
         9.67159091, 16.33043478,  9.43978723, 11.10313725, 10.22955556,
        11.57575758, 12.47194444, 12.22138889, 10.36794118,  8.775     ,
        10.46055556, 12.55241379, 11.78611111,  7.89736111,  7.06944444,
@@ -407,14 +414,14 @@ the tuple will be <code class="docutils literal notranslate"><span class="pre">N
         3.14875   , 16.80952381, 12.45724138, 15.76208333, 11.69902778]),), (None,))
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>((array([ -9355174.23973406,  -9305731.50511056,  -9378946.06987249,
         -9894654.50049513,  -9357159.20186525,  -9310436.24708494,
         -9176098.20900436,  -9848465.95859632,  -9657890.50782771,
-        -9408987.70828107,  -9592090.92179618,  -9397058.84931958,
+        -9408987.70828107,  -9592090.92179618,  -9397058.84931957,
         -9614660.3229513 ,  -9438991.174341  ,  -9220530.82286406,
         -9464280.35533937,  -9148327.82534205,  -9254885.93667311,
         -9284574.48085645,  -9103675.72047743,  -9617332.38735867,
@@ -424,7 +431,7 @@ the tuple will be <code class="docutils literal notranslate"><span class="pre">N
         -9418511.70927591,  -9312192.17512406,  -9633794.21272551,
         -9386466.02256181,  -9298192.46624686, -10151936.13057628,
         -9335849.48821648,  -9334064.93091582,  -8951759.31583123,
-        -9066696.25769683,  -9086927.60249552,  -9399253.75936852,
+        -9066696.25769684,  -9086927.60249552,  -9399253.75936852,
         -9167595.31833663,  -9052610.66103518,  -9401849.47907855,
         -9332280.37361521,  -8991029.11953241,  -8973832.47645352,
         -9529249.69278712,  -9266070.43483542,  -9429505.34569483,
@@ -437,16 +444,16 @@ the tuple will be <code class="docutils literal notranslate"><span class="pre">N
        2915167.81938923, 2873187.46869299, 3003831.55941359,
        2735051.95799933, 2953788.49303643, 2915178.71303919,
        3249859.25595487, 2916780.19714376, 3182123.69352164,
-       3337515.62533228, 3230904.19741824, 3187923.45258656,
-       3041327.49695636, 2912727.91396922, 2979696.00616845,
-       2954947.37073634, 3348209.3192316 , 3284716.48014213,
+       3337515.62533228, 3230904.19741823, 3187923.45258655,
+       3041327.49695635, 2912727.91396922, 2979696.00616845,
+       2954947.37073634, 3348209.31923159, 3284716.48014213,
        3043124.19066597, 3246452.13452785, 3189924.51834186,
-       3339251.70946121, 2715192.27113021, 2992766.36237038,
-       3024323.56139651, 3192216.72345509, 3430837.16378734,
+       3339251.70946121, 2715192.2711302 , 2992766.36237038,
+       3024323.56139652, 3192216.72345509, 3430837.16378734,
        3327060.19688609, 2904921.67586422, 2871114.86619099,
        2807032.29570529, 2992876.08017689, 3082728.91614068,
-       3254021.33225593, 3216131.11265389, 3253177.52895142,
-       3265222.50231349, 2744264.94274218, 3049585.98626738,
+       3254021.33225593, 3216131.11265388, 3253177.52895142,
+       3265222.50231348, 2744264.94274218, 3049585.98626738,
        3129450.24999779, 3452568.99011507])), (array([17.71611111, 17.3918    , 10.73421875,  8.08555556, 16.258125  ,
        16.18181818, 15.87828571,  7.47625   , 11.02857143, 12.25472222,
        17.16923077, 15.60208333,  5.04152778, 13.14263889, 12.47835821,
@@ -462,38 +469,45 @@ the tuple will be <code class="docutils literal notranslate"><span class="pre">N
 </pre></div>
 </div>
 <p>Let’s plot these two datasets with different colors:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="View documentation for matplotlib.pyplot.figure"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.axes.html#matplotlib.pyplot.axes" title="View documentation for matplotlib.pyplot.axes"><span class="n">plt</span><span class="o">.</span><span class="n">axes</span></a><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Air temperature measurements for Texas&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">train</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;.r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">test</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;.b&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="View documentation for matplotlib.pyplot.tight_layout"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<a href="https://scitools.org.uk/cartopy/docs/latest/reference/generated/cartopy.mpl.geoaxes.GeoAxesSubplot.html#cartopy.mpl.geoaxes.GeoAxesSubplot" title="cartopy.mpl.geoaxes.GeoAxesSubplot" class="sphx-glr-backref-module-cartopy-mpl-geoaxes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.axes.html#matplotlib.pyplot.axes" title="matplotlib.pyplot.axes" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">axes</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;Air temperature measurements for Texas&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;.r&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test</span></a><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;.b&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="matplotlib.axes.Axes.legend" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_aspect.html#matplotlib.axes.Axes.set_aspect" title="matplotlib.axes.Axes.set_aspect" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span></a><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_model_evaluation_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_model_evaluation_001.png" />
-<p>We can pass the training dataset to the <a class="reference internal" href="../api/generated/verde.base.BaseGridder.html#verde.base.BaseGridder.fit" title="verde.base.BaseGridder.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit</span></code></a> method of
+<img src="../_images/sphx_glr_model_evaluation_001.png" srcset="../_images/sphx_glr_model_evaluation_001.png" alt="Air temperature measurements for Texas" class = "sphx-glr-single-img"/><p>We can pass the training dataset to the <a class="reference internal" href="../api/generated/verde.base.BaseGridder.html#verde.base.BaseGridder.fit" title="verde.base.BaseGridder.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit</span></code></a> method of
 most gridders using Python’s argument expansion using the <code class="docutils literal notranslate"><span class="pre">*</span></code> symbol.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spline</span> <span class="o">=</span> <a href="../api/generated/verde.Spline.html#verde.Spline" title="View documentation for verde.Spline"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">()</span>
-<span class="n">spline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="o">*</span><span class="n">train</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">spline</span></a> <span class="o">=</span> <a href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-class"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">()</span>
+<a href="../api/generated/verde.Spline.html#verde.Spline.fit" title="verde.Spline.fit" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-method"><span class="n">spline</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(</span><span class="o">*</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+
+Spline()
 </pre></div>
 </div>
 <p>Let’s plot the gridded result to see what it looks like. First, we’ll create a
 geographic grid:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span>
-    <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
-    <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="http://xarray.pydata.org/en/stable/generated/xarray.Dataset.html#xarray.Dataset" title="xarray.Dataset" class="sphx-glr-backref-module-xarray sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grid</span></a> <span class="o">=</span> <a href="../api/generated/verde.Spline.html#verde.Spline.grid" title="verde.Spline.grid" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-method"><span class="n">spline</span><span class="o">.</span><span class="n">grid</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">region</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">region</span></a><span class="p">,</span>
+    <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">spacing</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">spacing</span></a><span class="p">,</span>
     <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">,</span>
     <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">],</span>
-    <span class="n">data_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;temperature&quot;</span><span class="p">],</span>
+    <span class="n">data_names</span><span class="o">=</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="http://xarray.pydata.org/en/stable/generated/xarray.Dataset.html#xarray.Dataset" title="xarray.Dataset" class="sphx-glr-backref-module-xarray sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grid</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;xarray.Dataset&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/verde/base/base_classes.py:456: FutureWarning: The &#39;spacing&#39;, &#39;shape&#39; and &#39;region&#39; arguments will be removed in Verde v2.0.0. Please use the &#39;verde.grid_coordinates&#39; function to define grid coordinates and pass them as the &#39;coordinates&#39; argument.
+  warnings.warn(
+&lt;xarray.Dataset&gt;
 Dimensions:      (latitude: 43, longitude: 51)
 Coordinates:
   * longitude    (longitude) float64 -106.4 -106.1 -105.9 ... -94.06 -93.8
@@ -501,75 +515,70 @@ Coordinates:
 Data variables:
     temperature  (latitude, longitude) float64 36.72 36.32 35.92 ... 4.568 4.711
 Attributes:
-    metadata:  Generated by Spline(damping=None, engine=&#39;auto&#39;, force_coords=...
+    metadata:  Generated by Spline()
 </pre></div>
 </div>
 <p>Then, we’ll mask out grid points that are too far from any given data point and plot
 the grid:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <a href="../api/generated/verde.distance_mask.html#verde.distance_mask" title="View documentation for verde.distance_mask"><span class="n">vd</span><span class="o">.</span><span class="n">distance_mask</span></a><span class="p">(</span>
-    <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">latitude</span><span class="p">),</span>
-    <span class="n">maxdist</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">spacing</span> <span class="o">*</span> <span class="mf">111e3</span><span class="p">,</span>
-    <span class="n">coordinates</span><span class="o">=</span><a href="../api/generated/verde.grid_coordinates.html#verde.grid_coordinates" title="View documentation for verde.grid_coordinates"><span class="n">vd</span><span class="o">.</span><span class="n">grid_coordinates</span></a><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">),</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mask</span></a> <span class="o">=</span> <a href="../api/generated/verde.distance_mask.html#verde.distance_mask" title="verde.distance_mask" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">distance_mask</span></a><span class="p">(</span>
+    <span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">longitude</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">latitude</span></a><span class="p">),</span>
+    <span class="n">maxdist</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">spacing</span></a> <span class="o">*</span> <span class="mf">111e3</span><span class="p">,</span>
+    <span class="n">coordinates</span><span class="o">=</span><a href="../api/generated/verde.grid_coordinates.html#verde.grid_coordinates" title="verde.grid_coordinates" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">grid_coordinates</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">region</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">spacing</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">spacing</span></a><span class="p">),</span>
     <span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+<a href="http://xarray.pydata.org/en/stable/generated/xarray.Dataset.html#xarray.Dataset" title="xarray.Dataset" class="sphx-glr-backref-module-xarray sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grid</span></a> <span class="o">=</span> <a href="http://xarray.pydata.org/en/stable/generated/xarray.Dataset.where.html#xarray.Dataset.where" title="xarray.Dataset.where" class="sphx-glr-backref-module-xarray sphx-glr-backref-type-py-method"><span class="n">grid</span><span class="o">.</span><span class="n">where</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mask</span></a><span class="p">)</span>
 
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="View documentation for matplotlib.pyplot.figure"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.axes.html#matplotlib.pyplot.axes" title="View documentation for matplotlib.pyplot.axes"><span class="n">plt</span><span class="o">.</span><span class="n">axes</span></a><span class="p">(</span><span class="n">projection</span><span class="o">=</span><a href="https://scitools.org.uk/cartopy/docs/latest/crs/projections.html#cartopy.crs.Mercator" title="View documentation for cartopy.crs.Mercator"><span class="n">ccrs</span><span class="o">.</span><span class="n">Mercator</span></a><span class="p">())</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Gridded temperature&quot;</span><span class="p">)</span>
-<span class="n">pc</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">temperature</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
-    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<a href="https://scitools.org.uk/cartopy/docs/latest/reference/generated/cartopy.mpl.geoaxes.GeoAxesSubplot.html#cartopy.mpl.geoaxes.GeoAxesSubplot" title="cartopy.mpl.geoaxes.GeoAxesSubplot" class="sphx-glr-backref-module-cartopy-mpl-geoaxes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.axes.html#matplotlib.pyplot.axes" title="matplotlib.pyplot.axes" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">axes</span></a><span class="p">(</span><span class="n">projection</span><span class="o">=</span><a href="https://scitools.org.uk/cartopy/docs/latest/reference/projections.html#cartopy.crs.Mercator" title="cartopy.crs.Mercator" class="sphx-glr-backref-module-cartopy-crs sphx-glr-backref-type-py-class"><span class="n">ccrs</span><span class="o">.</span><span class="n">Mercator</span></a><span class="p">())</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.set_title.html#matplotlib.axes.Axes.set_title" title="matplotlib.axes.Axes.set_title" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span></a><span class="p">(</span><span class="s2">&quot;Gridded temperature&quot;</span><span class="p">)</span>
+<span class="n">pc</span> <span class="o">=</span> <a href="http://xarray.pydata.org/en/stable/generated/xarray.Dataset.html#xarray.Dataset" title="xarray.Dataset" class="sphx-glr-backref-module-xarray sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grid</span></a><span class="o">.</span><span class="n">temperature</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+    <a href="https://scitools.org.uk/cartopy/docs/latest/reference/generated/cartopy.mpl.geoaxes.GeoAxesSubplot.html#cartopy.mpl.geoaxes.GeoAxesSubplot" title="cartopy.mpl.geoaxes.GeoAxesSubplot" class="sphx-glr-backref-module-cartopy-mpl-geoaxes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="o">=</span><a href="https://scitools.org.uk/cartopy/docs/latest/reference/generated/cartopy.mpl.geoaxes.GeoAxesSubplot.html#cartopy.mpl.geoaxes.GeoAxesSubplot" title="cartopy.mpl.geoaxes.GeoAxesSubplot" class="sphx-glr-backref-module-cartopy-mpl-geoaxes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">,</span>
     <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;plasma&quot;</span><span class="p">,</span>
-    <span class="n">transform</span><span class="o">=</span><a href="https://scitools.org.uk/cartopy/docs/latest/crs/projections.html#cartopy.crs.PlateCarree" title="View documentation for cartopy.crs.PlateCarree"><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span></a><span class="p">(),</span>
+    <span class="n">transform</span><span class="o">=</span><a href="https://scitools.org.uk/cartopy/docs/latest/reference/projections.html#cartopy.crs.PlateCarree" title="cartopy.crs.PlateCarree" class="sphx-glr-backref-module-cartopy-crs sphx-glr-backref-type-py-class"><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span></a><span class="p">(),</span>
     <span class="n">add_colorbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">add_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.colorbar.html#matplotlib.pyplot.colorbar" title="View documentation for matplotlib.pyplot.colorbar"><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span></a><span class="p">(</span><span class="n">pc</span><span class="p">)</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">latitude</span><span class="p">,</span> <span class="s2">&quot;.k&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><a href="https://scitools.org.uk/cartopy/docs/latest/crs/projections.html#cartopy.crs.PlateCarree" title="View documentation for cartopy.crs.PlateCarree"><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span></a><span class="p">())</span>
-<a href="../api/generated/verde.datasets.setup_texas_wind_map.html#verde.datasets.setup_texas_wind_map" title="View documentation for verde.datasets.setup_texas_wind_map"><span class="n">vd</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">setup_texas_wind_map</span></a><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.tight_layout.html#matplotlib.pyplot.tight_layout" title="View documentation for matplotlib.pyplot.tight_layout"><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="View documentation for matplotlib.pyplot.show"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.colorbar.html#matplotlib.pyplot.colorbar" title="matplotlib.pyplot.colorbar" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span></a><span class="p">(</span><span class="n">pc</span><span class="p">)</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.plot.html#matplotlib.axes.Axes.plot" title="matplotlib.axes.Axes.plot" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">longitude</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">latitude</span></a><span class="p">,</span> <span class="s2">&quot;.k&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><a href="https://scitools.org.uk/cartopy/docs/latest/reference/projections.html#cartopy.crs.PlateCarree" title="cartopy.crs.PlateCarree" class="sphx-glr-backref-module-cartopy-crs sphx-glr-backref-type-py-class"><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span></a><span class="p">())</span>
+<a href="../api/generated/verde.datasets.setup_texas_wind_map.html#verde.datasets.setup_texas_wind_map" title="verde.datasets.setup_texas_wind_map" class="sphx-glr-backref-module-verde-datasets sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">setup_texas_wind_map</span></a><span class="p">(</span><a href="https://scitools.org.uk/cartopy/docs/latest/reference/generated/cartopy.mpl.geoaxes.GeoAxesSubplot.html#cartopy.mpl.geoaxes.GeoAxesSubplot" title="cartopy.mpl.geoaxes.GeoAxesSubplot" class="sphx-glr-backref-module-cartopy-mpl-geoaxes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a><span class="p">)</span>
+<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_model_evaluation_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_model_evaluation_002.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/travis/build/fatiando/verde/tutorials/model_evaluation.py:123: UserWarning: Tight layout not applied. The left and right margins cannot be made large enough to accommodate all axes decorations.
-  plt.tight_layout()
-</pre></div>
-</div>
-</div>
+<img src="../_images/sphx_glr_model_evaluation_002.png" srcset="../_images/sphx_glr_model_evaluation_002.png" alt="Gridded temperature" class = "sphx-glr-single-img"/></div>
 <div class="section" id="scoring">
 <h2>Scoring<a class="headerlink" href="#scoring" title="Permalink to this headline">¶</a></h2>
 <p>Gridders in Verde implement the <a class="reference internal" href="../api/generated/verde.base.BaseGridder.html#verde.base.BaseGridder.score" title="verde.base.BaseGridder.score"><code class="xref py py-meth docutils literal notranslate"><span class="pre">score</span></code></a> method that
 calculates the <a class="reference external" href="https://en.wikipedia.org/wiki/Coefficient_of_determination">R² coefficient of determination</a>
 for a given comparison dataset (<code class="docutils literal notranslate"><span class="pre">test</span></code> in our case). The R² score is at most 1,
 meaning a perfect prediction, but has no lower bound.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="o">*</span><span class="n">test</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;R² score:&quot;</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">score</span></a> <span class="o">=</span> <a href="../api/generated/verde.Spline.html#verde.Spline.score" title="verde.Spline.score" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-method"><span class="n">spline</span><span class="o">.</span><span class="n">score</span></a><span class="p">(</span><span class="o">*</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;R² score:&quot;</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">score</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>R² score: 0.8404552994996752
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>R² score: 0.8404552994991327
 </pre></div>
 </div>
 <p>That’s a good score meaning that our gridder is able to accurately predict data that
 wasn’t used in the gridding algorithm.</p>
 <div class="admonition caution">
-<p class="first admonition-title">Caution</p>
-<p class="last">Once caveat for this score is that it is highly dependent on the particular split
+<p class="admonition-title">Caution</p>
+<p>Once caveat for this score is that it is highly dependent on the particular split
 that we made. Changing the random number generator seed in
 <a class="reference internal" href="../api/generated/verde.train_test_split.html#verde.train_test_split" title="verde.train_test_split"><code class="xref py py-func docutils literal notranslate"><span class="pre">verde.train_test_split</span></code></a> will result in a different score.</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use 1 as a seed instead of 0</span>
-<span class="n">train_other</span><span class="p">,</span> <span class="n">test_other</span> <span class="o">=</span> <a href="../api/generated/verde.train_test_split.html#verde.train_test_split" title="View documentation for verde.train_test_split"><span class="n">vd</span><span class="o">.</span><span class="n">train_test_split</span></a><span class="p">(</span>
-    <span class="n">proj_coords</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_other</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_other</span></a> <span class="o">=</span> <a href="../api/generated/verde.train_test_split.html#verde.train_test_split" title="verde.train_test_split" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">train_test_split</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">proj_coords</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span></a><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span>
 <span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;R² score with seed 1:&quot;</span><span class="p">,</span> <a href="../api/generated/verde.Spline.html#verde.Spline" title="View documentation for verde.Spline"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="o">*</span><span class="n">train_other</span><span class="p">)</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="o">*</span><span class="n">test_other</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;R² score with seed 1:&quot;</span><span class="p">,</span> <a href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-class"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="o">*</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">train_other</span></a><span class="p">)</span><span class="o">.</span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">score</span></a><span class="p">(</span><span class="o">*</span><a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">test_other</span></a><span class="p">))</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>R² score with seed 1: 0.7832246926672775
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+R² score with seed 1: 0.7832246926679199
 </pre></div>
 </div>
 </div>
@@ -579,47 +588,141 @@ that we made. Changing the random number generator seed in
 <a class="reference internal" href="../api/generated/verde.cross_val_score.html#verde.cross_val_score" title="verde.cross_val_score"><code class="xref py py-func docutils literal notranslate"><span class="pre">verde.cross_val_score</span></code></a>, which (by default) uses a <a class="reference external" href="https://en.wikipedia.org/wiki/Cross-validation_(statistics)#k-fold_cross-validation">k-fold cross-validation</a>
 by default. It will split the data <em>k</em> times and return the score on each <em>fold</em>. We
 can then take a mean of these scores.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <a href="../api/generated/verde.cross_val_score.html#verde.cross_val_score" title="View documentation for verde.cross_val_score"><span class="n">vd</span><span class="o">.</span><span class="n">cross_val_score</span></a><span class="p">(</span><a href="../api/generated/verde.Spline.html#verde.Spline" title="View documentation for verde.Spline"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">(),</span> <span class="n">proj_coords</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;k-fold scores:&quot;</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean score:&quot;</span><span class="p">,</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a> <span class="o">=</span> <a href="../api/generated/verde.cross_val_score.html#verde.cross_val_score" title="verde.cross_val_score" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">cross_val_score</span></a><span class="p">(</span><a href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-class"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">(),</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">proj_coords</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;k-fold scores:&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean score:&quot;</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">))</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>k-fold scores: [0.81655898 0.72019255 0.81596348 0.87740087 0.75006854]
-Mean score: 0.7960368854859687
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+k-fold scores: [0.81655898 0.72019255 0.81596348 0.87740087 0.75006854]
+Mean score: 0.7960368854826679
 </pre></div>
 </div>
 <p>You can also use most cross-validation splitter classes from
-<a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection" title="(in scikit-learn v0.21.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.model_selection</span></code></a> by specifying the <code class="docutils literal notranslate"><span class="pre">cv</span></code> argument. For example, if we
+<a class="reference external" href="https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection" title="(in scikit-learn v1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sklearn.model_selection</span></code></a> by specifying the <code class="docutils literal notranslate"><span class="pre">cv</span></code> argument. For example, if we
 want to shuffle then split the data <em>n</em> times
-(<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.ShuffleSplit.html#sklearn.model_selection.ShuffleSplit" title="(in scikit-learn v0.21.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.model_selection.ShuffleSplit</span></code></a>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.ShuffleSplit.html#sklearn.model_selection.ShuffleSplit" title="View documentation for sklearn.model_selection.ShuffleSplit"><span class="n">ShuffleSplit</span></a>
+(<a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.ShuffleSplit.html#sklearn.model_selection.ShuffleSplit" title="(in scikit-learn v1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.model_selection.ShuffleSplit</span></code></a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.ShuffleSplit.html#sklearn.model_selection.ShuffleSplit" title="sklearn.model_selection.ShuffleSplit" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">ShuffleSplit</span></a>
 
-<span class="n">shuffle</span> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.ShuffleSplit.html#sklearn.model_selection.ShuffleSplit" title="View documentation for sklearn.model_selection.ShuffleSplit"><span class="n">ShuffleSplit</span></a><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.ShuffleSplit.html#sklearn.model_selection.ShuffleSplit" title="sklearn.model_selection.ShuffleSplit" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">shuffle</span></a> <span class="o">=</span> <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.ShuffleSplit.html#sklearn.model_selection.ShuffleSplit" title="sklearn.model_selection.ShuffleSplit" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class"><span class="n">ShuffleSplit</span></a><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="n">scores</span> <span class="o">=</span> <a href="../api/generated/verde.cross_val_score.html#verde.cross_val_score" title="View documentation for verde.cross_val_score"><span class="n">vd</span><span class="o">.</span><span class="n">cross_val_score</span></a><span class="p">(</span>
-    <a href="../api/generated/verde.Spline.html#verde.Spline" title="View documentation for verde.Spline"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">(),</span> <span class="n">proj_coords</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">shuffle</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a> <span class="o">=</span> <a href="../api/generated/verde.cross_val_score.html#verde.cross_val_score" title="verde.cross_val_score" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">cross_val_score</span></a><span class="p">(</span>
+    <a href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-class"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">(),</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">proj_coords</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span></a><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.ShuffleSplit.html#sklearn.model_selection.ShuffleSplit" title="sklearn.model_selection.ShuffleSplit" class="sphx-glr-backref-module-sklearn-model_selection sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">shuffle</span></a>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shuffle scores:&quot;</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean score:&quot;</span><span class="p">,</span> <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html#numpy.mean" title="View documentation for numpy.mean"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shuffle scores:&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean score:&quot;</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">))</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>shuffle scores: [0.8404553  0.79219264 0.60098099 0.73123421 0.67325199 0.70560489
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+shuffle scores: [0.8404553  0.79219264 0.60098099 0.73123421 0.67325199 0.70560489
  0.68905622 0.83517217 0.86908658 0.84133251]
-Mean score: 0.7578367516979183
+Mean score: 0.7578367516991227
 </pre></div>
 </div>
-<p><strong>That is not a very good score</strong> so clearly the default arguments for
-<a class="reference internal" href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spline</span></code></a> aren’t suitable for this dataset. We could try different
-combinations manually until we get a good score. A better way is to do this
-automatically. In <a class="reference internal" href="model_selection.html#model-selection"><span class="std std-ref">Model Selection</span></a> we’ll go over how to do that.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.695 seconds)</p>
+</div>
+<div class="section" id="parallel-cross-validation">
+<h2>Parallel cross-validation<a class="headerlink" href="#parallel-cross-validation" title="Permalink to this headline">¶</a></h2>
+<p>Cross-validation involves running several model fit and score operations
+which are independent of each other. Because of this, they are prime targets
+for parallelization. Verde uses the excellent <a class="reference external" href="https://dask.org/">Dask</a>
+library for parallel execution.</p>
+<p>To run <a class="reference internal" href="../api/generated/verde.cross_val_score.html#verde.cross_val_score" title="verde.cross_val_score"><code class="xref py py-func docutils literal notranslate"><span class="pre">verde.cross_val_score</span></code></a> with Dask, use the <code class="docutils literal notranslate"><span class="pre">delayed</span></code> argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a> <span class="o">=</span> <a href="../api/generated/verde.cross_val_score.html#verde.cross_val_score" title="verde.cross_val_score" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-function"><span class="n">vd</span><span class="o">.</span><span class="n">cross_val_score</span></a><span class="p">(</span>
+    <a href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline" class="sphx-glr-backref-module-verde sphx-glr-backref-type-py-class"><span class="n">vd</span><span class="o">.</span><span class="n">Spline</span></a><span class="p">(),</span> <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="builtins.tuple" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">proj_coords</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.core.series.Series" class="sphx-glr-backref-module-pandas-core-series sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data</span><span class="o">.</span><span class="n">air_temperature_c</span></a><span class="p">,</span> <span class="n">delayed</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Delayed k-fold scores:&quot;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Delayed k-fold scores: [Delayed(&#39;fit_score-194a0aca-5549-4fa6-99f4-3117869be6d5&#39;), Delayed(&#39;fit_score-930e1e79-72d5-425d-b4d1-e1b088fcbb22&#39;), Delayed(&#39;fit_score-0fb7aa4d-5ed5-489b-8f0f-b9b63ccb3f2d&#39;), Delayed(&#39;fit_score-559f91f3-ac50-4c73-b8de-2eb045f2bc9e&#39;), Delayed(&#39;fit_score-3694137d-0dcb-4eea-ad88-92c4e9d4b6cc&#39;)]
+</pre></div>
+</div>
+<p>In this case, the scores haven’t actually been computed yet (hence the
+“delayed” term). Instead, Verde scheduled the operations with Dask. Since we
+are interested only in the mean score, we can schedule the mean as well using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">dask.delayed</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dask</span>
+
+<a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">mean_score</span></a> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">delayed</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="numpy.mean" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">mean</span></a><span class="p">)(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scores</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Delayed mean:&quot;</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">mean_score</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Delayed mean: Delayed(&#39;mean-3438731e-de19-4de3-84b4-1de4faa3a044&#39;)
+</pre></div>
+</div>
+<p>To run the scheduled computations and get the mean score, use
+<a class="reference external" href="https://docs.dask.org/en/latest/api.html#dask.compute" title="(in Dask)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dask.compute</span></code></a> or <code class="docutils literal notranslate"><span class="pre">.compute()</span></code>. Dask will automatically execute
+things in parallel.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">mean_score</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">mean_score</span><span class="o">.</span><span class="n">compute</span></a><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean score:&quot;</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="numpy.float64" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-attribute"><span class="n">mean_score</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+/usr/share/miniconda3/envs/testing/lib/python3.8/site-packages/sklearn/linear_model/_base.py:148: FutureWarning: &#39;normalize&#39; was deprecated in version 1.0 and will be removed in 1.2. Please leave the normalize parameter to its default value to silence this warning. The default behavior of this estimator is to not do any normalization. If normalization is needed please use sklearn.preprocessing.StandardScaler instead.
+  warnings.warn(
+Mean score: 0.7960368854826679
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Dask will run many <code class="docutils literal notranslate"><span class="pre">fit</span></code> operations in parallel, which can be memory
+intensive. Make sure you have enough RAM to run multiple fits.</p>
+</div>
+</div>
+<div class="section" id="improving-the-score">
+<h2>Improving the score<a class="headerlink" href="#improving-the-score" title="Permalink to this headline">¶</a></h2>
+<p>That score is not bad but it could be better. The default arguments for
+<a class="reference internal" href="../api/generated/verde.Spline.html#verde.Spline" title="verde.Spline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spline</span></code></a> aren’t optimal for this dataset. We could try
+different combinations manually until we get a good score. A better way is to
+do this automatically. In <a class="reference internal" href="model_selection.html#model-selection"><span class="std std-ref">Model Selection</span></a> we’ll go over how to do just
+that.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.659 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-model-evaluation-py">
-<div class="sphx-glr-download docutils container">
-<a class="reference download internal" download="" href="../_downloads/ae19a46114feaa06d9e4e20d9213fac8/model_evaluation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">model_evaluation.py</span></code></a></div>
-<div class="sphx-glr-download docutils container">
-<a class="reference download internal" download="" href="../_downloads/de7b93c41e0dc7795d26e01bfd8f9856/model_evaluation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">model_evaluation.ipynb</span></code></a></div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/9c35741d00d56cadd9c9ce8cb60a83ac/model_evaluation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">model_evaluation.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/20ccfb7485becea704ca8ee5aae7ae9f/model_evaluation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">model_evaluation.ipynb</span></code></a></p>
+</div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -645,9 +748,9 @@ automatically. In <a class="reference internal" href="model_selection.html#model
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, The Verde Developers
+        &copy; Copyright 2017-2021, The Verde Developers
       <span class="lastupdated">
-        Last updated on Jul 23, 2019.
+        Last updated on Nov 23, 2021.
       </span>
 
     </p>

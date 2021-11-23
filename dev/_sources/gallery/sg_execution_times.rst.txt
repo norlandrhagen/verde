@@ -5,17 +5,36 @@
 
 Computation times
 =================
-**00:13.415** total execution time for **gallery** files:
+**00:45.536** total execution time for **gallery** files:
 
-- **00:02.906**: :ref:`sphx_glr_gallery_trend.py` (``trend.py``)
-- **00:01.942**: :ref:`sphx_glr_gallery_spline_weights.py` (``spline_weights.py``)
-- **00:01.233**: :ref:`sphx_glr_gallery_blockreduce_weights_mean.py` (``blockreduce_weights_mean.py``)
-- **00:01.123**: :ref:`sphx_glr_gallery_vectorspline2d.py` (``vectorspline2d.py``)
-- **00:01.051**: :ref:`sphx_glr_gallery_distance_mask.py` (``distance_mask.py``)
-- **00:01.003**: :ref:`sphx_glr_gallery_blockreduce_weights.py` (``blockreduce_weights.py``)
-- **00:00.890**: :ref:`sphx_glr_gallery_spline.py` (``spline.py``)
-- **00:00.883**: :ref:`sphx_glr_gallery_blockreduce.py` (``blockreduce.py``)
-- **00:00.790**: :ref:`sphx_glr_gallery_spline_cv.py` (``spline_cv.py``)
-- **00:00.626**: :ref:`sphx_glr_gallery_scipygridder.py` (``scipygridder.py``)
-- **00:00.596**: :ref:`sphx_glr_gallery_vector_trend.py` (``vector_trend.py``)
-- **00:00.372**: :ref:`sphx_glr_gallery_vector_uncoupled.py` (``vector_uncoupled.py``)
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_blockkfold.py` (``blockkfold.py``)                             | 00:20.899 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_train_test_split.py` (``train_test_split.py``)                 | 00:06.562 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_convex_hull_mask.py` (``convex_hull_mask.py``)                 | 00:04.677 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_distance_mask.py` (``distance_mask.py``)                       | 00:03.309 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_blockreduce_weights_mean.py` (``blockreduce_weights_mean.py``) | 00:01.662 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_spline_weights.py` (``spline_weights.py``)                     | 00:01.345 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_blockreduce_weights.py` (``blockreduce_weights.py``)           | 00:01.105 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_spline.py` (``spline.py``)                                     | 00:00.999 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_trend.py` (``trend.py``)                                       | 00:00.968 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_project_grid.py` (``project_grid.py``)                         | 00:00.860 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_scipygridder.py` (``scipygridder.py``)                         | 00:00.852 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_vector_trend.py` (``vector_trend.py``)                         | 00:00.774 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_spline_cv.py` (``spline_cv.py``)                               | 00:00.600 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_blockreduce.py` (``blockreduce.py``)                           | 00:00.503 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_gallery_vector_uncoupled.py` (``vector_uncoupled.py``)                 | 00:00.420 | 0.0 MB |
++---------------------------------------------------------------------------------------+-----------+--------+

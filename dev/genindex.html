@@ -40,8 +40,12 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sg_gallery-rendered-html.css" type="text/css" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
     <!-- Google Analytics tracking code -->
@@ -154,7 +158,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/fatiando/verde/blob/master/CODE_OF_CONDUCT.md"><i class="fa fa-gavel fa-fw"></i> Code of Conduct</a></li>
             
-                <li class="toctree-l1"><a href="https://gitter.im/fatiando/fatiando"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+                <li class="toctree-l1"><a href="http://contact.fatiando.org"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
             
                 <li class="toctree-l1"><a href="https://github.com/fatiando/verde"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
@@ -231,6 +235,7 @@
  <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
@@ -239,6 +244,7 @@
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#V"><strong>V</strong></a>
@@ -247,15 +253,21 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/verde.base.BaseBlockCrossValidator.html#verde.base.BaseBlockCrossValidator">BaseBlockCrossValidator (class in verde.base)</a>
+</li>
       <li><a href="api/generated/verde.base.BaseGridder.html#verde.base.BaseGridder">BaseGridder (class in verde.base)</a>
 </li>
       <li><a href="api/generated/verde.block_split.html#verde.block_split">block_split() (in module verde)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/verde.BlockKFold.html#verde.BlockKFold">BlockKFold (class in verde)</a>
+</li>
       <li><a href="api/generated/verde.BlockMean.html#verde.BlockMean">BlockMean (class in verde)</a>
 </li>
       <li><a href="api/generated/verde.BlockReduce.html#verde.BlockReduce">BlockReduce (class in verde)</a>
+</li>
+      <li><a href="api/generated/verde.BlockShuffleSplit.html#verde.BlockShuffleSplit">BlockShuffleSplit (class in verde)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -271,6 +283,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard">CheckerBoard (class in verde.datasets)</a>
 </li>
+      <li><a href="api/generated/verde.convexhull_mask.html#verde.convexhull_mask">convexhull_mask() (in module verde)</a>
+</li>
       <li><a href="api/generated/verde.cross_val_score.html#verde.cross_val_score">cross_val_score() (in module verde)</a>
 </li>
   </ul></td>
@@ -280,6 +294,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/verde.distance_mask.html#verde.distance_mask">distance_mask() (in module verde)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/verde.expanding_window.html#verde.expanding_window">expanding_window() (in module verde)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -304,6 +326,8 @@
 </li>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.filter">(verde.Chain method)</a>
 </li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.filter">(verde.datasets.CheckerBoard method)</a>
+</li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.filter">(verde.ScipyGridder method)</a>
 </li>
         <li><a href="api/generated/verde.Spline.html#verde.Spline.filter">(verde.Spline method)</a>
@@ -316,8 +340,6 @@
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.filter">(verde.VectorSpline2D method)</a>
 </li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.filter">(verde.datasets.CheckerBoard method)</a>
-</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -325,6 +347,8 @@
 
       <ul>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.fit">(verde.Chain method)</a>
+</li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.fit">(verde.datasets.CheckerBoard method)</a>
 </li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.fit">(verde.ScipyGridder method)</a>
 </li>
@@ -338,8 +362,6 @@
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.fit">(verde.VectorSpline2D method)</a>
 </li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.fit">(verde.datasets.CheckerBoard method)</a>
-</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -347,6 +369,14 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/verde.base.BaseBlockCrossValidator.html#verde.base.BaseBlockCrossValidator.get_n_splits">get_n_splits() (verde.base.BaseBlockCrossValidator method)</a>
+
+      <ul>
+        <li><a href="api/generated/verde.BlockKFold.html#verde.BlockKFold.get_n_splits">(verde.BlockKFold method)</a>
+</li>
+        <li><a href="api/generated/verde.BlockShuffleSplit.html#verde.BlockShuffleSplit.get_n_splits">(verde.BlockShuffleSplit method)</a>
+</li>
+      </ul></li>
       <li><a href="api/generated/verde.base.BaseGridder.html#verde.base.BaseGridder.get_params">get_params() (verde.base.BaseGridder method)</a>
 
       <ul>
@@ -355,6 +385,8 @@
         <li><a href="api/generated/verde.BlockReduce.html#verde.BlockReduce.get_params">(verde.BlockReduce method)</a>
 </li>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.get_params">(verde.Chain method)</a>
+</li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.get_params">(verde.datasets.CheckerBoard method)</a>
 </li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.get_params">(verde.ScipyGridder method)</a>
 </li>
@@ -368,8 +400,6 @@
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.get_params">(verde.VectorSpline2D method)</a>
 </li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.get_params">(verde.datasets.CheckerBoard method)</a>
-</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -379,6 +409,8 @@
 
       <ul>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.grid">(verde.Chain method)</a>
+</li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.grid">(verde.datasets.CheckerBoard method)</a>
 </li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.grid">(verde.ScipyGridder method)</a>
 </li>
@@ -391,8 +423,6 @@
         <li><a href="api/generated/verde.Vector.html#verde.Vector.grid">(verde.Vector method)</a>
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.grid">(verde.VectorSpline2D method)</a>
-</li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.grid">(verde.datasets.CheckerBoard method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/verde.grid_coordinates.html#verde.grid_coordinates">grid_coordinates() (in module verde)</a>
@@ -433,16 +463,20 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/verde.load_surfer.html#verde.load_surfer">load_surfer() (in module verde)</a>
 </li>
+      <li><a href="api/generated/verde.datasets.locate.html#verde.datasets.locate">locate() (in module verde.datasets)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/generated/verde.maxabs.html#verde.maxabs">maxabs() (in module verde)</a>
+      <li><a href="api/generated/verde.make_xarray_grid.html#verde.make_xarray_grid">make_xarray_grid() (in module verde)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/verde.maxabs.html#verde.maxabs">maxabs() (in module verde)</a>
+</li>
       <li><a href="api/generated/verde.median_distance.html#verde.median_distance">median_distance() (in module verde)</a>
 </li>
   </ul></td>
@@ -466,6 +500,8 @@
       <ul>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.predict">(verde.Chain method)</a>
 </li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.predict">(verde.datasets.CheckerBoard method)</a>
+</li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.predict">(verde.ScipyGridder method)</a>
 </li>
         <li><a href="api/generated/verde.Spline.html#verde.Spline.predict">(verde.Spline method)</a>
@@ -478,15 +514,13 @@
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.predict">(verde.VectorSpline2D method)</a>
 </li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.predict">(verde.datasets.CheckerBoard method)</a>
-</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/verde.base.BaseGridder.html#verde.base.BaseGridder.profile">profile() (verde.base.BaseGridder method)</a>
 
       <ul>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.profile">(verde.Chain method)</a>
+</li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.profile">(verde.datasets.CheckerBoard method)</a>
 </li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.profile">(verde.ScipyGridder method)</a>
 </li>
@@ -500,12 +534,22 @@
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.profile">(verde.VectorSpline2D method)</a>
 </li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.profile">(verde.datasets.CheckerBoard method)</a>
-</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/generated/verde.profile_coordinates.html#verde.profile_coordinates">profile_coordinates() (in module verde)</a>
 </li>
+      <li><a href="api/generated/verde.project_grid.html#verde.project_grid">project_grid() (in module verde)</a>
+</li>
       <li><a href="api/generated/verde.project_region.html#verde.project_region">project_region() (in module verde)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/verde.rolling_window.html#verde.rolling_window">rolling_window() (in module verde)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -517,6 +561,8 @@
 
       <ul>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.scatter">(verde.Chain method)</a>
+</li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.scatter">(verde.datasets.CheckerBoard method)</a>
 </li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.scatter">(verde.ScipyGridder method)</a>
 </li>
@@ -530,8 +576,6 @@
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.scatter">(verde.VectorSpline2D method)</a>
 </li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.scatter">(verde.datasets.CheckerBoard method)</a>
-</li>
       </ul></li>
       <li><a href="api/generated/verde.scatter_points.html#verde.scatter_points">scatter_points() (in module verde)</a>
 </li>
@@ -541,6 +585,8 @@
 
       <ul>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.score">(verde.Chain method)</a>
+</li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.score">(verde.datasets.CheckerBoard method)</a>
 </li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.score">(verde.ScipyGridder method)</a>
 </li>
@@ -554,8 +600,6 @@
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.score">(verde.VectorSpline2D method)</a>
 </li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.score">(verde.datasets.CheckerBoard method)</a>
-</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -568,6 +612,8 @@
 </li>
         <li><a href="api/generated/verde.Chain.html#verde.Chain.set_params">(verde.Chain method)</a>
 </li>
+        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.set_params">(verde.datasets.CheckerBoard method)</a>
+</li>
         <li><a href="api/generated/verde.ScipyGridder.html#verde.ScipyGridder.set_params">(verde.ScipyGridder method)</a>
 </li>
         <li><a href="api/generated/verde.Spline.html#verde.Spline.set_params">(verde.Spline method)</a>
@@ -579,8 +625,6 @@
         <li><a href="api/generated/verde.Vector.html#verde.Vector.set_params">(verde.Vector method)</a>
 </li>
         <li><a href="api/generated/verde.VectorSpline2D.html#verde.VectorSpline2D.set_params">(verde.VectorSpline2D method)</a>
-</li>
-        <li><a href="api/generated/verde.datasets.CheckerBoard.html#verde.datasets.CheckerBoard.set_params">(verde.datasets.CheckerBoard method)</a>
 </li>
       </ul></li>
       <li><a href="api/generated/verde.datasets.setup_baja_bathymetry_map.html#verde.datasets.setup_baja_bathymetry_map">setup_baja_bathymetry_map() (in module verde.datasets)</a>
@@ -595,6 +639,14 @@
 </li>
       <li><a href="api/generated/verde.SplineCV.html#verde.SplineCV">SplineCV (class in verde)</a>
 </li>
+      <li><a href="api/generated/verde.base.BaseBlockCrossValidator.html#verde.base.BaseBlockCrossValidator.split">split() (verde.base.BaseBlockCrossValidator method)</a>
+
+      <ul>
+        <li><a href="api/generated/verde.BlockKFold.html#verde.BlockKFold.split">(verde.BlockKFold method)</a>
+</li>
+        <li><a href="api/generated/verde.BlockShuffleSplit.html#verde.BlockShuffleSplit.split">(verde.BlockShuffleSplit method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -642,9 +694,9 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, The Verde Developers
+        &copy; Copyright 2017-2021, The Verde Developers
       <span class="lastupdated">
-        Last updated on Jul 23, 2019.
+        Last updated on Nov 23, 2021.
       </span>
 
     </p>

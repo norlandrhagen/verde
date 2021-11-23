@@ -17,9 +17,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_chain_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_chain_thumb.png
+     :alt: Chaining Operations
 
-        :ref:`sphx_glr_tutorials_chain.py`
+     :ref:`sphx_glr_tutorials_chain.py`
 
 .. raw:: html
 
@@ -37,9 +38,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_decimation_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_decimation_thumb.png
+     :alt: Data Decimation
 
-        :ref:`sphx_glr_tutorials_decimation.py`
+     :ref:`sphx_glr_tutorials_decimation.py`
 
 .. raw:: html
 
@@ -57,9 +59,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_grid_coordinates_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_grid_coordinates_thumb.png
+     :alt: Grid Coordinates
 
-        :ref:`sphx_glr_tutorials_grid_coordinates.py`
+     :ref:`sphx_glr_tutorials_grid_coordinates.py`
 
 .. raw:: html
 
@@ -77,9 +80,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_model_evaluation_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_model_evaluation_thumb.png
+     :alt: Evaluating Performance
 
-        :ref:`sphx_glr_tutorials_model_evaluation.py`
+     :ref:`sphx_glr_tutorials_model_evaluation.py`
 
 .. raw:: html
 
@@ -97,9 +101,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_model_selection_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_model_selection_thumb.png
+     :alt: Model Selection
 
-        :ref:`sphx_glr_tutorials_model_selection.py`
+     :ref:`sphx_glr_tutorials_model_selection.py`
 
 .. raw:: html
 
@@ -117,9 +122,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_overview_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_overview_thumb.png
+     :alt: Overview
 
-        :ref:`sphx_glr_tutorials_overview.py`
+     :ref:`sphx_glr_tutorials_overview.py`
 
 .. raw:: html
 
@@ -137,9 +143,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_projections_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_projections_thumb.png
+     :alt: Geographic Coordinates
 
-        :ref:`sphx_glr_tutorials_projections.py`
+     :ref:`sphx_glr_tutorials_projections.py`
 
 .. raw:: html
 
@@ -157,9 +164,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_trends_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_trends_thumb.png
+     :alt: Trend Estimation
 
-        :ref:`sphx_glr_tutorials_trends.py`
+     :ref:`sphx_glr_tutorials_trends.py`
 
 .. raw:: html
 
@@ -177,9 +185,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_vectors_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_vectors_thumb.png
+     :alt: Vector Data
 
-        :ref:`sphx_glr_tutorials_vectors.py`
+     :ref:`sphx_glr_tutorials_vectors.py`
 
 .. raw:: html
 
@@ -197,9 +206,10 @@ Tutorials
 
 .. only:: html
 
-    .. figure:: /tutorials/images/thumb/sphx_glr_weights_thumb.png
+ .. figure:: /tutorials/images/thumb/sphx_glr_weights_thumb.png
+     :alt: Using Weights
 
-        :ref:`sphx_glr_tutorials_weights.py`
+     :ref:`sphx_glr_tutorials_weights.py`
 
 .. raw:: html
 
@@ -212,7 +222,7 @@ Tutorials
    /tutorials/weights
 .. raw:: html
 
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 

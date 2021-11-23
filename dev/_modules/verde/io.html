@@ -39,8 +39,12 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sg_gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sg_gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sg_gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/sg_gallery-rendered-html.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <!-- Google Analytics tracking code -->
@@ -153,7 +157,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/fatiando/verde/blob/master/CODE_OF_CONDUCT.md"><i class="fa fa-gavel fa-fw"></i> Code of Conduct</a></li>
             
-                <li class="toctree-l1"><a href="https://gitter.im/fatiando/fatiando"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
+                <li class="toctree-l1"><a href="http://contact.fatiando.org"><i class="fa fa-comment fa-fw"></i> Contact</a></li>
             
                 <li class="toctree-l1"><a href="https://github.com/fatiando/verde"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
@@ -223,7 +227,13 @@
            <div itemprop="articleBody">
             
   <h1>Source code for verde.io</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="c1"># Copyright (c) 2017 The Verde Developers.</span>
+<span class="c1"># Distributed under the terms of the BSD 3-Clause License.</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+<span class="c1">#</span>
+<span class="c1"># This code is part of the Fatiando a Terra project (https://www.fatiando.org)</span>
+<span class="c1">#</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Functions for input and output of grids in less common formats.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -247,7 +257,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fname : str or file-like object</span>
-<span class="sd">        Name or path of the Surfer grid file or an open file (or file-like) object.</span>
+<span class="sd">        Name or path of the Surfer grid file or an open file (or file-like)</span>
+<span class="sd">        object.</span>
 <span class="sd">    dtype : str or numpy.dtype</span>
 <span class="sd">        The type of variable used for the data. Default is ``float64``. Use</span>
 <span class="sd">        ``float32`` if the data are large and precision is not an issue.</span>
@@ -298,8 +309,8 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse the header record of the grid file.</span>
 
-<span class="sd">    The header contains information on the grid shape, region, and the minimum and</span>
-<span class="sd">    maximum data values.</span>
+<span class="sd">    The header contains information on the grid shape, region, and the minimum</span>
+<span class="sd">    and maximum data values.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -311,7 +322,8 @@
 <span class="sd">    grid_id : str</span>
 <span class="sd">        The ID of the Surfer ASCII grid.</span>
 <span class="sd">    shape : tuple = (n_northing, n_easting)</span>
-<span class="sd">        The number of grid points in the northing and easting dimension, respectively.</span>
+<span class="sd">        The number of grid points in the northing and easting dimension,</span>
+<span class="sd">        respectively.</span>
 <span class="sd">    region : tuple = (west, east, south, north)</span>
 <span class="sd">        The grid region.</span>
 <span class="sd">    data_range : list = [min, max]</span>
@@ -360,9 +372,9 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, The Verde Developers
+        &copy; Copyright 2017-2021, The Verde Developers
       <span class="lastupdated">
-        Last updated on Jul 23, 2019.
+        Last updated on Nov 23, 2021.
       </span>
 
     </p>

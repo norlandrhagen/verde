@@ -15,13 +15,35 @@ This gallery contains a selection examples of what Verde can do.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Cross-validation scores for spatial data can be biased because observations are commonly spatia...">
+
+.. only:: html
+
+ .. figure:: /gallery/images/thumb/sphx_glr_blockkfold_thumb.png
+     :alt: K-Fold cross-validation with blocks
+
+     :ref:`sphx_glr_gallery_blockkfold.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery/blockkfold
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="When gridding data that has been highly oversampled in a direction (shipborne and airborne data...">
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_blockreduce_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_blockreduce_thumb.png
+     :alt: Blocked reduction operations
 
-        :ref:`sphx_glr_gallery_blockreduce.py`
+     :ref:`sphx_glr_gallery_blockreduce.py`
 
 .. raw:: html
 
@@ -39,9 +61,10 @@ This gallery contains a selection examples of what Verde can do.
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_blockreduce_weights_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_blockreduce_weights_thumb.png
+     :alt: Using weights in blocked reduction
 
-        :ref:`sphx_glr_gallery_blockreduce_weights.py`
+     :ref:`sphx_glr_gallery_blockreduce_weights.py`
 
 .. raw:: html
 
@@ -59,9 +82,10 @@ This gallery contains a selection examples of what Verde can do.
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_blockreduce_weights_mean_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_blockreduce_weights_mean_thumb.png
+     :alt: Using weights in blocked means
 
-        :ref:`sphx_glr_gallery_blockreduce_weights_mean.py`
+     :ref:`sphx_glr_gallery_blockreduce_weights_mean.py`
 
 .. raw:: html
 
@@ -79,9 +103,31 @@ This gallery contains a selection examples of what Verde can do.
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_distance_mask_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_convex_hull_mask_thumb.png
+     :alt: Mask grid points by convex hull
 
-        :ref:`sphx_glr_gallery_distance_mask.py`
+     :ref:`sphx_glr_gallery_convex_hull_mask.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery/convex_hull_mask
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Sometimes, data points are unevenly distributed. In such cases, we might not want to have inter...">
+
+.. only:: html
+
+ .. figure:: /gallery/images/thumb/sphx_glr_distance_mask_thumb.png
+     :alt: Mask grid points by distance
+
+     :ref:`sphx_glr_gallery_distance_mask.py`
 
 .. raw:: html
 
@@ -95,13 +141,35 @@ This gallery contains a selection examples of what Verde can do.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Sometimes gridded data products need to be projected before they can be used. For example, you ...">
+
+.. only:: html
+
+ .. figure:: /gallery/images/thumb/sphx_glr_project_grid_thumb.png
+     :alt: Projection of gridded data
+
+     :ref:`sphx_glr_gallery_project_grid.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery/project_grid
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Scipy offers a range of interpolation methods in scipy.interpolate and 3 specifically for 2D da...">
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_scipygridder_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_scipygridder_thumb.png
+     :alt: Gridding with Scipy
 
-        :ref:`sphx_glr_gallery_scipygridder.py`
+     :ref:`sphx_glr_gallery_scipygridder.py`
 
 .. raw:: html
 
@@ -119,9 +187,10 @@ This gallery contains a selection examples of what Verde can do.
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_spline_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_spline_thumb.png
+     :alt: Gridding with splines
 
-        :ref:`sphx_glr_gallery_spline.py`
+     :ref:`sphx_glr_gallery_spline.py`
 
 .. raw:: html
 
@@ -139,9 +208,10 @@ This gallery contains a selection examples of what Verde can do.
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_spline_cv_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_spline_cv_thumb.png
+     :alt: Gridding with splines (cross-validated)
 
-        :ref:`sphx_glr_gallery_spline_cv.py`
+     :ref:`sphx_glr_gallery_spline_cv.py`
 
 .. raw:: html
 
@@ -159,9 +229,10 @@ This gallery contains a selection examples of what Verde can do.
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_spline_weights_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_spline_weights_thumb.png
+     :alt: Gridding with splines and weights
 
-        :ref:`sphx_glr_gallery_spline_weights.py`
+     :ref:`sphx_glr_gallery_spline_weights.py`
 
 .. raw:: html
 
@@ -175,13 +246,35 @@ This gallery contains a selection examples of what Verde can do.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Verde gridders are mostly linear models that are used to predict data at new locations. As such...">
+
+.. only:: html
+
+ .. figure:: /gallery/images/thumb/sphx_glr_train_test_split_thumb.png
+     :alt: Splitting data into train and test sets
+
+     :ref:`sphx_glr_gallery_train_test_split.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery/train_test_split
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Verde offers the verde.Trend class to fit a 2D polynomial trend to your data. This can be usefu...">
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_trend_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_trend_thumb.png
+     :alt: Polynomial trend
 
-        :ref:`sphx_glr_gallery_trend.py`
+     :ref:`sphx_glr_gallery_trend.py`
 
 .. raw:: html
 
@@ -199,9 +292,10 @@ This gallery contains a selection examples of what Verde can do.
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_vector_trend_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_vector_trend_thumb.png
+     :alt: Trends in vector data
 
-        :ref:`sphx_glr_gallery_vector_trend.py`
+     :ref:`sphx_glr_gallery_vector_trend.py`
 
 .. raw:: html
 
@@ -219,9 +313,10 @@ This gallery contains a selection examples of what Verde can do.
 
 .. only:: html
 
-    .. figure:: /gallery/images/thumb/sphx_glr_vector_uncoupled_thumb.png
+ .. figure:: /gallery/images/thumb/sphx_glr_vector_uncoupled_thumb.png
+     :alt: Gridding 2D vectors
 
-        :ref:`sphx_glr_gallery_vector_uncoupled.py`
+     :ref:`sphx_glr_gallery_vector_uncoupled.py`
 
 .. raw:: html
 
@@ -232,29 +327,9 @@ This gallery contains a selection examples of what Verde can do.
    :hidden:
 
    /gallery/vector_uncoupled
-
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="One way of gridding vector data would be grid each component separately using verde.Spline and ...">
-
-.. only:: html
-
-    .. figure:: /gallery/images/thumb/sphx_glr_vectorspline2d_thumb.png
-
-        :ref:`sphx_glr_gallery_vectorspline2d.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /gallery/vectorspline2d
-.. raw:: html
-
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 
